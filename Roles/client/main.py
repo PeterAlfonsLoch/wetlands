@@ -81,7 +81,7 @@ class Main(threading.Thread):
         self.capture_path = "/home/pi/wetlands/captures/"
         self.queue = Queue.Queue()
         self.network = Network(hostname, self.network_message_handler, self.network_status_handler)
-        self.utils = Utils(hostname)
+        #self.utils = Utils(hostname)
         self.images = Images(self.capture_path)
 
         self.network.thirtybirds.subscribe_to_topic("reboot")
