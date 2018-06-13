@@ -17,7 +17,7 @@ import time
 import traceback
 
 from thirtybirds_2_0.Network.manager import init as thirtybirds_network
-from thirtybirds_2_0.Adaptors.Cameras.C920 import init as camera_init
+from thirtybirds_2_0.Adaptors.Cameras.c920 import init as camera_init
 from thirtybirds_2_0.Updates.manager import init as updates_init
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
