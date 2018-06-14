@@ -1,3 +1,4 @@
+import base64
 import json
 import os
 import Queue
@@ -30,6 +31,19 @@ class Network(object):
             status_callback=network_status_handler
         )
 
+class Timer(threading.Thread):
+    def __init__(self, message_target):
+        threading.Thread.__init__(self)
+        self.delay_between_photos = 60.0 # seconds
+        self.message_target = message_target
+    def run(self):
+        while True:
+            self.message_target.add_to_queue("local/timer/response")
+            time.sleep(self.delay_between_photos)
+
+
+
+
 # Main handles network send/recv and can see all other classes directly
 class Main(threading.Thread):
     def __init__(self, hostname):
@@ -37,6 +51,8 @@ class Main(threading.Thread):
         self.network = Network(hostname, self.network_message_handler, self.network_status_handler)
         self.queue = Queue.Queue()
         self.network.thirtybirds.subscribe_to_topic("controller/")
+        self.timer = Timer(self)
+        self.timer.start()
 
     def network_message_handler(self, topic_data):
         # this method runs in the thread of the caller, not the tread of Main
@@ -62,9 +78,13 @@ class Main(threading.Thread):
         while True:
             try:
                 topic, data = self.queue.get(True)
+
+                if topic == "local/timer/response":
+                    self.network.thirtybirds.send("wetlands-environment-1/image_capture/request","")
+
                 if topic == "controller/image_capture/response":
-                    print "controller/image_capture/response"
-                    print data
+                    hostname, image_as_string = data
+                    print hostname
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
