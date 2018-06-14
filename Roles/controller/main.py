@@ -36,7 +36,7 @@ class Main(threading.Thread):
         threading.Thread.__init__(self)
         self.network = Network(hostname, self.network_message_handler, self.network_status_handler)
         self.queue = Queue.Queue()
-        self.network.thirtybirds.subscribe_to_topic("controller/image_capture/response")
+        self.network.thirtybirds.subscribe_to_topic("controller/")
 
     def network_message_handler(self, topic_data):
         # this method runs in the thread of the caller, not the tread of Main
