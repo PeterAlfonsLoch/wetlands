@@ -87,7 +87,8 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("reboot")
         self.network.thirtybirds.subscribe_to_topic("remote_update")
         self.network.thirtybirds.subscribe_to_topic("remote_update_scripts")
-        self.network.thirtybirds.subscribe_to_topic("wetlands-environment-1/image_capture/request")
+        #self.network.thirtybirds.subscribe_to_topic("wetlands-environment-1/image_capture/request")
+        self.network.thirtybirds.subscribe_to_topic("wetlands-environment-1/")
 
     def network_message_handler(self, topic_msg):
         # this method runs in the thread of the caller, not the tread of Main
