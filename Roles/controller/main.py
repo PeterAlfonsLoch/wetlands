@@ -38,11 +38,44 @@ class Timer(threading.Thread):
         self.message_target = message_target
     def run(self):
         while True:
-            self.message_target.add_to_queue("local/timer/response")
+            self.message_target.add_to_queue("local/timer/response","")
             time.sleep(self.delay_between_photos)
 
 
+class SamOS(object):
+    def __init__(self, message_target):
+        self.message_target = message_target
+    def generate_env_state_from_capture(self, filename):
+        self.read_image_file_as_numpy_array()
+        self.pre_process_image_data()
+        self.classifly_image()
+        env_state = self.generate_env_state()
+        self.message_target.add_to_queue("local/env_state/response",env_state)
 
+    def read_image_file_as_numpy_array(self):
+        return
+
+    def pre_process_image_data(self):
+        return
+
+    def classifly_image(self):
+        return
+
+    def generate_env_state(self):
+        return {
+            "mister_1":random.randint(0,1),
+            "mister_2":random.randint(0,1),
+            "grow_light":random.randint(0,1),
+            "raindrops":random.randint(0,255),
+            "pump":random.randint(0,1),
+            "dj_light_1_r":random.randint(0,255),
+            "dj_light_1_g":random.randint(0,255),
+            "dj_light_1_b":random.randint(0,255),
+            "dj_light_2_r":random.randint(0,255),
+            "dj_light_2_g":random.randint(0,255),
+            "dj_light_2_b":random.randint(0,255),
+        }
+        
 
 # Main handles network send/recv and can see all other classes directly
 class Main(threading.Thread):
@@ -53,6 +86,8 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("controller/")
         self.timer = Timer(self)
         self.timer.start()
+        self.samos = SamOS(self)
+        self.samos.start()
 
     def network_message_handler(self, topic_data):
         # this method runs in the thread of the caller, not the tread of Main
@@ -84,7 +119,12 @@ class Main(threading.Thread):
 
                 if topic == "controller/image_capture/response":
                     hostname, image_as_string = data
-                    print hostname
+                    filename = "{}.png".format(hostname) 
+                    with open("Captures/{}".format(filename), "wb") as fh:
+                        fh.write(image_as_string.decode('base64'))
+
+                if topic == "local/env_state/response":
+                    self.network.thirtybirds.send("wetlands-environment-1/env_state/set","")
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()

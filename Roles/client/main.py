@@ -118,7 +118,11 @@ class Main(threading.Thread):
                     self.images.capture_image(filename)
                     image_as_string = self.images.get_image_as_base64(filename)
                     self.network.thirtybirds.send("controller/image_capture/response", (self.hostname,image_as_string))
-                    #print image_as_string
+
+
+                if topic == "wetlands-environment-1/env_state/set":
+
+                    print data
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
