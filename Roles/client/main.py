@@ -53,6 +53,36 @@ class Images(object):
             return base64.b64encode(image_file.read())
 
 ########################
+## DMX
+########################
+
+class DMX(object):
+    def __init__(self):
+        self.name_to_address_map = {
+            "mister_1":1,
+            "mister_2":2,
+            "grow_light":3,
+            "raindrops_1":4,
+            "raindrops_2":5,
+            "pump":6,
+            "dj_light_1_r":7,
+            "dj_light_1_g":8,
+            "dj_light_1_b":9,
+            "dj_light_2_r":10,
+            "dj_light_2_g":11,
+            "dj_light_2_b":12,
+        }
+    def convert_to_DMX_addresses(self, data):
+        values_for_dmx = {}
+        for device_name,dmx_val in data.items():
+            values_for_dmx[str(self.name_to_address_map[device_name])] = dmx_val
+        return values_for_dmx
+    def convert_and_send(self, data):
+        dmx_address_to_value_map = self.convert_to_DMX_addresses(data)
+        print dmx_address_to_value_map
+
+
+########################
 ## NETWORK
 ########################
 
@@ -83,6 +113,7 @@ class Main(threading.Thread):
         self.network = Network(hostname, self.network_message_handler, self.network_status_handler)
         #self.utils = Utils(hostname)
         self.images = Images(self.capture_path)
+        self.dmx = DMX()
 
         #self.network.thirtybirds.subscribe_to_topic("reboot")
         #self.network.thirtybirds.subscribe_to_topic("remote_update")
@@ -119,9 +150,8 @@ class Main(threading.Thread):
                     image_as_string = self.images.get_image_as_base64(filename)
                     self.network.thirtybirds.send("controller/image_capture/response", (self.hostname,image_as_string))
 
-
                 if topic == "wetlands-environment-1/env_state/set":
-
+                    self.dmx.convert_and_send(msg)
                     print msg
 
             except Exception as e:
