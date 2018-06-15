@@ -67,6 +67,7 @@ class DMX(threading.Thread):
             self.ser.close()
         print ('Opening Enttec USB DMX Pro on', self.ser.port, 'at', self.ser.baudrate, 'baud')
         self.ser.open()
+        self.device_states = [0]*20
         self.name_to_address_map = {
             "mister_1":1,
             "mister_2":2,
@@ -86,9 +87,6 @@ class DMX(threading.Thread):
         for device_name,dmx_val in data.items():
             values_for_dmx[str(self.name_to_address_map[device_name])] = dmx_val
         return values_for_dmx
-    def convert_and_send(self, data):
-        dmx_address_to_value_map = self.convert_to_DMX_addresses(data)
-        print dmx_address_to_value_map
 
     def sendmsg(self, label, message=[]):
         # How many data points to send
@@ -105,16 +103,6 @@ class DMX(threading.Thread):
             # Too long!
             sys.stderr.write('TX_ERROR: Malformed message! The message to be send is too long!\n')
 
-    def sendDMX(self, channels):
-        # Sends an array of up to 512 channels
-        data = [0] + channels
-        # Fill up the channels up to the minimum of 25
-        while len(data) < 25:
-            # Make all the extra channels 0
-            data += [0]
-        # Send all the data with label 6
-        self.sendmsg(6, data)
-
     def add_to_queue(self, topic, msg):
         self.queue.put((topic, msg))
 
@@ -122,12 +110,14 @@ class DMX(threading.Thread):
         toggle = False
         while True:
             topic, msg = self.queue.get(True)
-            time.sleep(.025)
-            if toggle:
-                self.sendDMX([0, 0, 200])
-            else:
-                self.sendDMX([0, 0, 0])
-            toggle = not toggle
+            if topic == "local/env_state/set":
+                dmx_address_to_value_map = self.convert_to_DMX_addresses(msg)
+                print dmx_address_to_value_map
+                for address, value in items(dmx_address_to_value_map):
+                    self.device_states[int(address)] = int(value)
+                self.sendmsg(6, self.device_states)
+
+
 
 ########################
 ## NETWORK
@@ -199,8 +189,7 @@ class Main(threading.Thread):
                     self.network.thirtybirds.send("controller/image_capture/response", (self.hostname,image_as_string))
 
                 if topic == "wetlands-environment-1/env_state/set":
-                    self.dmx.convert_and_send(msg)
-                    #print msg
+                    dmx.add_to_queue("local/env_state/set", msg)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()

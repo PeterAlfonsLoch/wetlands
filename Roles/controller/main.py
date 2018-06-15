@@ -34,7 +34,7 @@ class Network(object):
 class Timer(threading.Thread):
     def __init__(self, message_target):
         threading.Thread.__init__(self)
-        self.delay_between_photos = 60.0 # seconds
+        self.delay_between_photos = 5.0 # seconds
         self.message_target = message_target
     def run(self):
         while True:
