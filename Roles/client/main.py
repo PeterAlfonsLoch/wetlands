@@ -113,7 +113,7 @@ class DMX(threading.Thread):
             if topic == "local/env_state/set":
                 dmx_address_to_value_map = self.convert_to_DMX_addresses(msg)
                 print dmx_address_to_value_map
-                for address, value in items(dmx_address_to_value_map):
+                for address, value in dmx_address_to_value_map.items():
                     self.device_states[int(address)] = int(value)
                 self.sendmsg(6, self.device_states)
 
