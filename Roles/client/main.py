@@ -189,7 +189,7 @@ class Main(threading.Thread):
                     self.network.thirtybirds.send("controller/image_capture/response", (self.hostname,image_as_string))
 
                 if topic == "wetlands-environment-1/env_state/set":
-                    dmx.add_to_queue("local/env_state/set", msg)
+                    self.dmx.add_to_queue("local/env_state/set", msg)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
