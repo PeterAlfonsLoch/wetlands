@@ -50,6 +50,7 @@ class SamOS(object):
         self.pre_process_image_data()
         self.classifly_image()
         env_state = self.generate_env_state()
+        print env_state
         self.message_target.add_to_queue("local/env_state/response",env_state)
 
     def read_image_file_as_numpy_array(self):
@@ -87,7 +88,6 @@ class Main(threading.Thread):
         self.timer = Timer(self)
         self.timer.start()
         self.samos = SamOS(self)
-        self.samos.start()
 
     def network_message_handler(self, topic_data):
         # this method runs in the thread of the caller, not the tread of Main
@@ -120,11 +120,13 @@ class Main(threading.Thread):
                 if topic == "controller/image_capture/response":
                     hostname, image_as_string = data
                     filename = "{}.png".format(hostname) 
-                    with open("Captures/{}".format(filename), "wb") as fh:
+                    pathname = "Captures/{}".format(filename)
+                    with open(pathname, "wb") as fh:
                         fh.write(image_as_string.decode('base64'))
+                    self.samos.generate_env_state_from_capture(filename)
 
                 if topic == "local/env_state/response":
-                    self.network.thirtybirds.send("wetlands-environment-1/env_state/set","")
+                    self.network.thirtybirds.send("wetlands-environment-1/env_state/set",data)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()

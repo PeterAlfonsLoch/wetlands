@@ -122,7 +122,7 @@ class Main(threading.Thread):
 
                 if topic == "wetlands-environment-1/env_state/set":
 
-                    print data
+                    print msg
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
