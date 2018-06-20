@@ -16,6 +16,7 @@ client_names = [
 server_names = [
     "wetlands-controller", 
     "avl-visual", 
+    "qua",
 ]
 
 dashboard_names = [
