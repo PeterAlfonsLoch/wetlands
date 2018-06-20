@@ -4,14 +4,15 @@ import cv2
 import importlib
 import json
 import math
-import numpy as np
-from operator import itemgetter
+#import numpy as np
+#from operator import itemgetter
 import os
 import Queue
 import random
 import settings 
+import serial
 import sys
-import subprocess
+#import subprocess
 import threading
 import time
 import traceback
@@ -56,8 +57,17 @@ class Images(object):
 ## DMX
 ########################
 
-class DMX(object):
+class DMX(threading.Thread):
     def __init__(self):
+        threading.Thread.__init__(self)
+        self.queue = Queue.Queue()
+        self.ser = serial.Serial()
+        self.ser.port = '/dev/ttyUSB0'
+        if self.ser.isOpen():
+            self.ser.close()
+        print ('Opening Enttec USB DMX Pro on', self.ser.port, 'at', self.ser.baudrate, 'baud')
+        self.ser.open()
+        self.device_states = [0]*20
         self.name_to_address_map = {
             "mister_1":1,
             "mister_2":2,
@@ -77,9 +87,36 @@ class DMX(object):
         for device_name,dmx_val in data.items():
             values_for_dmx[str(self.name_to_address_map[device_name])] = dmx_val
         return values_for_dmx
-    def convert_and_send(self, data):
-        dmx_address_to_value_map = self.convert_to_DMX_addresses(data)
-        print dmx_address_to_value_map
+
+    def sendmsg(self, label, message=[]):
+        # How many data points to send
+        l = len(message)
+        lm = l >> 8
+        ll = l - (lm << 8)
+        if l <= 600:
+            if self.ser.isOpen():
+                # Create the array to write to the serial port
+                arr = [0x7E, label, ll, lm] + message + [0xE7]
+                # Convert to byte array and write it
+                self.ser.write(bytearray(arr))
+        else:
+            # Too long!
+            sys.stderr.write('TX_ERROR: Malformed message! The message to be send is too long!\n')
+
+    def add_to_queue(self, topic, msg):
+        self.queue.put((topic, msg))
+
+    def run(self):
+        toggle = False
+        while True:
+            topic, msg = self.queue.get(True)
+            if topic == "local/env_state/set":
+                dmx_address_to_value_map = self.convert_to_DMX_addresses(msg)
+                print dmx_address_to_value_map
+                for address, value in dmx_address_to_value_map.items():
+                    self.device_states[int(address)] = int(value)
+                self.sendmsg(6, self.device_states)
+
 
 
 ########################
@@ -114,6 +151,7 @@ class Main(threading.Thread):
         #self.utils = Utils(hostname)
         self.images = Images(self.capture_path)
         self.dmx = DMX()
+        self.dmx.start()
 
         #self.network.thirtybirds.subscribe_to_topic("reboot")
         #self.network.thirtybirds.subscribe_to_topic("remote_update")
@@ -151,8 +189,7 @@ class Main(threading.Thread):
                     self.network.thirtybirds.send("controller/image_capture/response", (self.hostname,image_as_string))
 
                 if topic == "wetlands-environment-1/env_state/set":
-                    self.dmx.convert_and_send(msg)
-                    print msg
+                    self.dmx.add_to_queue("local/env_state/set", msg)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
