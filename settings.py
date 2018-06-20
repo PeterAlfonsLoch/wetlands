@@ -1,6 +1,6 @@
 import math
 
-server_hostname = "avl-visual"
+server_hostname = "Tegas-MacBook-Pro.local"
 discovery_multicastGroup = "224.3.29.71"
 discovery_multicastPort = 10010
 discovery_responsePort = 10011
@@ -14,11 +14,12 @@ client_names = [
 ]
 
 server_names = [
-    "wetlands-controller", 
-    "avl-visual", 
+    "wetlands-controller",
+    "avl-visual",
+    "Tegas-MacBook-Pro.local"
 ]
 
 dashboard_names = [
-    "wetlands-controller", 
+    "wetlands-controller",
     "wetlands-dashboard"
 ]
