@@ -6,6 +6,7 @@ import Queue
 import random
 import settings
 import time
+import datetime
 import threading
 import traceback
 import socket
@@ -120,7 +121,8 @@ class Main(threading.Thread):
 
                 if topic == "controller/image_capture/response":
                     hostname, image_as_string = data
-                    filename = "{}.png".format(hostname)
+                    timestamp = datetime.datetime.now().isoformat()
+                    filename = "{}_{}.png".format(hostname, timestamp)
                     pathname = "Captures/{}".format(filename)
                     with open(pathname, "wb") as fh:
                         fh.write(image_as_string.decode('base64'))
