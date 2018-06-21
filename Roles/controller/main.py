@@ -77,7 +77,7 @@ class SamOS(object):
             "dj_light_2_g":random.randint(0,255),
             "dj_light_2_b":random.randint(0,255),
         }
-        
+
 
 # Main handles network send/recv and can see all other classes directly
 class Main(threading.Thread):
@@ -120,7 +120,7 @@ class Main(threading.Thread):
 
                 if topic == "controller/image_capture/response":
                     hostname, image_as_string = data
-                    filename = "{}.png".format(hostname) 
+                    filename = "{}.png".format(hostname)
                     pathname = "Captures/{}".format(filename)
                     with open(pathname, "wb") as fh:
                         fh.write(image_as_string.decode('base64'))
@@ -133,7 +133,7 @@ class Main(threading.Thread):
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
 
-#main = None # reference here for 
+#main = None # reference here for
 
 def init(hostname):
     main = Main(hostname)
