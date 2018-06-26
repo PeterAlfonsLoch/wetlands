@@ -7,21 +7,21 @@ import label_image
 import random
 
 DMX_VALUE_RANGES = {
-    "mister_1":     (0,1),
-    "mister_2":     (0,1),
-    "grow_light":   (0,1),
-    "pump":         (0,1),
-    "raindrops_1":  (0,255),
-    "raindrops_2":  (0,255),
-    "raindrops_3":  (0,255),
-    "dj_light_1_d": (255,255),
-    "dj_light_1_r": (0,255),
-    "dj_light_1_g": (0,255),
-    "dj_light_1_b": (0,255),
-    "dj_light_2_d": (255,255),
-    "dj_light_2_r": (0,255),
-    "dj_light_2_g": (0,255),
-    "dj_light_2_b": (0,255),
+    "mister_1":     [0,255],
+    "mister_2":     [0,255],
+    "grow_light":   [0,255],
+    "pump":         [0,255],
+    "raindrops_1":  [0,255],
+    "raindrops_2":  [0,255],
+    "raindrops_3":  [0,255],
+    "dj_light_1_d": [255],
+    "dj_light_1_r": range(0,255),
+    "dj_light_1_g": range(0,255),
+    "dj_light_1_b": range(0,255),
+    "dj_light_2_d": [255],
+    "dj_light_2_r": range(0,255),
+    "dj_light_2_g": range(0,255),
+    "dj_light_2_b": range(0,255),
 }
 
 def remap(value, source_range, target_range):
@@ -45,7 +45,7 @@ class DNA(object):
 
     def random_gene(self, dmx_name):
         '''generates a random gene based on dmx ranges'''
-        return random.randint(*DMX_VALUE_RANGES[dmx_name])
+        return random.choice(DMX_VALUE_RANGES[dmx_name])
 
     def random_genome(self):
         '''generates a fully random genome'''
