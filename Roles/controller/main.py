@@ -53,43 +53,6 @@ class Timer(threading.Thread):
             time.sleep(self.delay_between_photos)
 
 
-class Wetland(object):
-    def __init__(self, name, mutation=0.01, max_population=10):
-        self.name = name
-        self.filename = name + '.json'
-        self.mutation = mutation
-        self.max_population = max_population
-        self.history = []
-
-        self.load_state()
-
-    def load_state(self):
-        if os.path.exists(self.filename):
-            with open(self.filename, 'r') as infile:
-                data = json.load(infile)
-            self.max_population = data.max_population
-            self.mutation = data.mutation
-            self.history = data.history
-        else:
-            self.save_state()
-
-    def save_state(self):
-        data = {
-            'name': self.name,
-            'max_population': self.max_population,
-            'mutation': self.mutation,
-            'history': self.history,
-        }
-
-        with open(self.filename, 'w') as outfile:
-            json.dump(data, outfile)
-
-
-    def fitness(self):
-        ''' get image confidence from state '''
-        pass
-
-
 class SamOS(object):
     def __init__(self, message_target):
         self.message_target = message_target
@@ -99,11 +62,13 @@ class SamOS(object):
             storage = hostname + '.pkl'
             if os.path.exists(storage):
                 with open(storage, 'r') as infile:
-                    population = pickle.load(infile)
+                    wetland = pickle.load(infile)
             else:
-                population = genetics.Population(CLIENT_FITNESS_LABELS[hostname])
+                wetland = genetics.Population(CLIENT_FITNESS_LABELS[hostname])
 
-            self.wetlands[hostname] = population
+            self.wetlands[hostname] = wetland
+            env_state = wetland.get_current_state()
+            self.message_target.add_to_queue("local/env_state/response", (hostname, env_state))
 
     def update_wetland(self, hostname, filename):
         wetland = self.wetlands[hostname]
@@ -124,7 +89,7 @@ class SamOS(object):
         with open(storage, 'w') as outfile:
             pickle.dump(wetland, outfile)
 
-        next_env_state = wetland.population[wetland.current_dna].genes
+        next_env_state = wetland.get_current_state()
         print next_env_state
         self.message_target.add_to_queue("local/env_state/response", (hostname, next_env_state))
 
@@ -136,9 +101,9 @@ class Main(threading.Thread):
         self.network = Network(hostname, self.network_message_handler, self.network_status_handler)
         self.queue = Queue.Queue()
         self.network.thirtybirds.subscribe_to_topic("controller/")
+        self.samos = SamOS(self)
         self.timer = Timer(self)
         self.timer.start()
-        self.samos = SamOS(self)
 
     def network_message_handler(self, topic_data):
         # this method runs in the thread of the caller, not the tread of Main
@@ -182,6 +147,8 @@ class Main(threading.Thread):
                 if topic == "local/env_state/response":
                     hostname, env_state = data
                     self.network.thirtybirds.send("{}/env_state/set".format(hostname), env_state)
+                    iteration = "iteration {}".format(random.randint(1, 295147905179352825856))
+                    self.network.thirtybirds.send("{}/speak".format(hostname), iteration)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()

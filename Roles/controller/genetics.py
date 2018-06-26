@@ -97,6 +97,9 @@ class Population(object):
         self.population[self.current_dna].image = filename
         self.population[self.current_dna].calculate_fitness()
 
+    def get_current_state(self):
+        return self.population[self.current_dna].genes
+
     def natural_selection(self):
         self.mating_pool = []
         max_fitness = max([p.fitness for p in self.population])
@@ -134,10 +137,10 @@ class Population(object):
 
 
 # if __name__ == '__main__':
-#     pop = Population(0.01, 100)
-#     for i in range(0, 500):
-#         pop.natural_selection()
-#         pop.generate()
-#         # pop.calculate_fitness()
-#         pop.evaluate()
-#         print pop.best.genes, pop.best.fitness
+    # pop = Population(0.01, 100)
+    # for i in range(0, 500):
+    #     pop.natural_selection()
+    #     pop.generate()
+    #     # pop.calculate_fitness()
+    #     pop.evaluate()
+    #     print pop.best.genes, pop.best.fitness

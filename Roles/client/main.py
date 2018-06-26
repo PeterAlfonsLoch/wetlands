@@ -117,6 +117,11 @@ class DMX(threading.Thread):
                     self.device_states[int(address)] = int(value)
                 self.sendmsg(6, self.device_states)
 
+            if topic == "local/speak":
+                pass
+                # code for speaking here!
+                # speak(msg)
+
 
 
 ########################
