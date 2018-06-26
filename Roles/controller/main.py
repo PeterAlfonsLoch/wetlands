@@ -137,7 +137,7 @@ class Main(threading.Thread):
 
                 if topic == "controller/image_capture/response":
                     hostname, image_as_string = data
-                    timestamp = datetime.datetime.now().isoformat()
+                    timestamp = int(time.time())
                     filename = "{}_{}.png".format(hostname, timestamp)
                     pathname = "Captures/{}".format(filename)
                     with open(pathname, "wb") as fh:

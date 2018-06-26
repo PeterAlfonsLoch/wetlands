@@ -58,9 +58,9 @@ class DNA(object):
         return self.genes
 
     def calculate_fitness(self):
-        self.fitness = random.random()
-        return self.fitness
-
+        # self.fitness = random.random()
+        # return self.fitness
+        #
         scores = label_image.label(self.image)
         scores = dict(scores)
         self.fitness = scores.get(self.fitness_label, 0)
@@ -142,11 +142,18 @@ class Population(object):
         return float(total) / float(len(self.population))
 
 
-# if __name__ == '__main__':
-    # pop = Population(0.01, 100)
-    # for i in range(0, 500):
-    #     pop.natural_selection()
-    #     pop.generate()
-    #     # pop.calculate_fitness()
-    #     pop.evaluate()
-    #     print pop.best.genes, pop.best.fitness
+if __name__ == '__main__':
+    wetland = Population('wetlands landscape', 0.01, 100)
+    for i in range(0, 800):
+        if wetland.current_dna < len(wetland.population) - 1:
+            wetland.calculate_current_fitness('test.png')
+            wetland.current_dna += 1
+        else:
+            wetland.natural_selection()
+            wetland.generate()
+            wetland.evaluate()
+            wetland.current_dna = 0
+
+        next_env_state = wetland.get_current_state()
+        print next_env_state
+
