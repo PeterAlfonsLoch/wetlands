@@ -1,5 +1,6 @@
 import base64
 import json
+import pickle
 import os
 import Queue
 #import RPi.GPIO as GPIO
@@ -11,10 +12,18 @@ import threading
 import traceback
 import socket
 import sys
+import label_image
+import genetics
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 UPPER_PATH = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
 THIRTYBIRDS_PATH = "%s/thirtybirds_2_0" % (UPPER_PATH )
+
+CLIENT_FITNESS_LABELS = {
+    "wetlands-environment-1": "landscape painting",
+    "wetlands-environment-2": "wetlands landscape",
+    "wetlands-environment-3": "crowd",
+}
 
 from thirtybirds_2_0.Network.manager import init as network_init
 
@@ -32,6 +41,7 @@ class Network(object):
             status_callback=network_status_handler
         )
 
+
 class Timer(threading.Thread):
     def __init__(self, message_target):
         threading.Thread.__init__(self)
@@ -43,41 +53,80 @@ class Timer(threading.Thread):
             time.sleep(self.delay_between_photos)
 
 
+class Wetland(object):
+    def __init__(self, name, mutation=0.01, max_population=10):
+        self.name = name
+        self.filename = name + '.json'
+        self.mutation = mutation
+        self.max_population = max_population
+        self.history = []
+
+        self.load_state()
+
+    def load_state(self):
+        if os.path.exists(self.filename):
+            with open(self.filename, 'r') as infile:
+                data = json.load(infile)
+            self.max_population = data.max_population
+            self.mutation = data.mutation
+            self.history = data.history
+        else:
+            self.save_state()
+
+    def save_state(self):
+        data = {
+            'name': self.name,
+            'max_population': self.max_population,
+            'mutation': self.mutation,
+            'history': self.history,
+        }
+
+        with open(self.filename, 'w') as outfile:
+            json.dump(data, outfile)
+
+
+    def fitness(self):
+        ''' get image confidence from state '''
+        pass
+
+
 class SamOS(object):
     def __init__(self, message_target):
         self.message_target = message_target
-    def generate_env_state_from_capture(self, filename):
-        self.read_image_file_as_numpy_array()
-        self.pre_process_image_data()
-        self.classifly_image()
-        env_state = self.generate_env_state()
-        print env_state
-        self.message_target.add_to_queue("local/env_state/response",env_state)
+        self.wetlands = {}
 
-    def read_image_file_as_numpy_array(self):
-        return
+        for hostname in CLIENT_FITNESS_LABELS:
+            storage = hostname + '.pkl'
+            if os.path.exists(storage):
+                with open(storage, 'r') as infile:
+                    population = pickle.load(infile)
+            else:
+                population = genetics.Population(CLIENT_FITNESS_LABELS[hostname])
 
-    def pre_process_image_data(self):
-        return
+            self.wetlands[hostname] = population
 
-    def classifly_image(self):
-        return
+    def update_wetland(self, hostname, filename):
+        wetland = self.wetlands[hostname]
 
-    def generate_env_state(self):
-        return {
-            "mister_1":random.randint(0,1),
-            "mister_2":random.randint(0,1),
-            "grow_light":random.randint(0,1),
-            "raindrops_1":random.randint(0,255),
-            "raindrops_2":random.randint(0,255),
-            "pump":random.randint(0,1),
-            "dj_light_1_r":random.randint(0,255),
-            "dj_light_1_g":random.randint(0,255),
-            "dj_light_1_b":random.randint(0,255),
-            "dj_light_2_r":random.randint(0,255),
-            "dj_light_2_g":random.randint(0,255),
-            "dj_light_2_b":random.randint(0,255),
-        }
+        if wetland.finished is True:
+            return True
+
+        if wetland.current_dna < len(wetland.population):
+            wetland.calculate_current_fitness(filename)
+            wetland.current_dna += 1
+        else:
+            wetland.natural_selection()
+            wetland.generate()
+            wetland.evaluate()
+            wetland.current_dna = 0
+
+        storage = hostname + '.pkl'
+        with open(storage, 'w') as outfile:
+            pickle.dump(wetland, outfile)
+
+        next_env_state = wetland.population[wetland.current_dna].genes
+        print next_env_state
+        self.message_target.add_to_queue("local/env_state/response", (hostname, next_env_state))
 
 
 # Main handles network send/recv and can see all other classes directly
@@ -118,6 +167,8 @@ class Main(threading.Thread):
 
                 if topic == "local/timer/response":
                     self.network.thirtybirds.send("wetlands-environment-1/image_capture/request","")
+                    self.network.thirtybirds.send("wetlands-environment-2/image_capture/request","")
+                    self.network.thirtybirds.send("wetlands-environment-3/image_capture/request","")
 
                 if topic == "controller/image_capture/response":
                     hostname, image_as_string = data
@@ -125,11 +176,12 @@ class Main(threading.Thread):
                     filename = "{}_{}.png".format(hostname, timestamp)
                     pathname = "Captures/{}".format(filename)
                     with open(pathname, "wb") as fh:
-                        fh.write(image_as_string.decode('base64'))
-                    self.samos.generate_env_state_from_capture(filename)
+                        fh.write(image_as_string.decode("base64"))
+                    self.samos.update_wetland(hostname, filename)
 
                 if topic == "local/env_state/response":
-                    self.network.thirtybirds.send("wetlands-environment-1/env_state/set",data)
+                    hostname, env_state = data
+                    self.network.thirtybirds.send("{}/env_state/set".format(hostname), env_state)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
