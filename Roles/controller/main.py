@@ -148,8 +148,8 @@ class Main(threading.Thread):
                     hostname, env_state = data
                     self.network.thirtybirds.send("{}/env_state/set".format(hostname), env_state)
 
-                    iteration = "iteration {}".format(random.randint(1, 295147905179352825856))
-                    self.network.thirtybirds.send("{}/speak".format(hostname), iteration)
+                    # iteration = "iteration {}".format(random.randint(1, 295147905179352825856))
+                    # self.network.thirtybirds.send("{}/speak".format(hostname), iteration)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()

@@ -56,6 +56,9 @@ class DNA(object):
         return self.genes
 
     def calculate_fitness(self):
+        self.fitness = random.random()
+        return self.fitness
+
         scores = label_image.label(self.image)
         scores = dict(scores)
         self.fitness = scores.get(self.fitness_label, 0)
