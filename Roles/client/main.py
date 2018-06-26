@@ -69,19 +69,21 @@ class DMX(threading.Thread):
         self.ser.open()
         self.device_states = [0]*40
         self.name_to_address_map = {
-            "mister_1":1,
-            "mister_2":2,
-            "pump":3,
-            "grow_light":4,
-            "dj_light_2_r":10,
-            "dj_light_2_g":11,
-            "dj_light_2_b":12,
-            "dj_light_1_r":18,
-            "dj_light_1_g":19,
-            "dj_light_1_b":20,
-            "raindrops_1":32,
-            "raindrops_2":33,
-            "raindrops_3":34,
+            "mister_1": 1,
+            "mister_2": 2,
+            "pump": 3,
+            "grow_light": 4,
+            "dj_light_2_d": 8,
+            "dj_light_2_r": 9,
+            "dj_light_2_g": 10,
+            "dj_light_2_b": 11,
+            "dj_light_1_d": 15,
+            "dj_light_1_r": 16,
+            "dj_light_1_g": 17,
+            "dj_light_1_b": 18,
+            "raindrops_1": 32,
+            "raindrops_2": 33,
+            "raindrops_3": 34,
         }
     def convert_to_DMX_addresses(self, data):
         values_for_dmx = {}
