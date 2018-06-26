@@ -67,20 +67,21 @@ class DMX(threading.Thread):
             self.ser.close()
         print ('Opening Enttec USB DMX Pro on', self.ser.port, 'at', self.ser.baudrate, 'baud')
         self.ser.open()
-        self.device_states = [0]*20
+        self.device_states = [0]*40
         self.name_to_address_map = {
             "mister_1":1,
             "mister_2":2,
-            "grow_light":3,
-            "raindrops_1":4,
-            "raindrops_2":5,
-            "pump":6,
-            "dj_light_1_r":7,
-            "dj_light_1_g":8,
-            "dj_light_1_b":9,
+            "pump":3,
+            "grow_light":4,
             "dj_light_2_r":10,
             "dj_light_2_g":11,
             "dj_light_2_b":12,
+            "dj_light_1_r":18,
+            "dj_light_1_g":19,
+            "dj_light_1_b":20,
+            "raindrops_1":32,
+            "raindrops_2":33,
+            "raindrops_3":34,
         }
     def convert_to_DMX_addresses(self, data):
         values_for_dmx = {}

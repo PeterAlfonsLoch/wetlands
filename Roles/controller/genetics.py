@@ -13,6 +13,7 @@ DMX_VALUE_RANGES = {
     "pump":         (0,1),
     "raindrops_1":  (0,255),
     "raindrops_2":  (0,255),
+    "raindrops_3":  (0,255),
     "dj_light_1_r": (0,255),
     "dj_light_1_g": (0,255),
     "dj_light_1_b": (0,255),
