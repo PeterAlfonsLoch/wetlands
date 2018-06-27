@@ -7,6 +7,8 @@ import label_image
 import random
 import json
 
+# possible values for the genome
+# if you add any new DMX stuff, change here AND in Roles/client/main.py
 DMX_VALUE_RANGES = {
     "mister_1":     [0,255],
     "mister_2":     [0,255],

@@ -67,6 +67,8 @@ class DMX(threading.Thread):
             self.ser.close()
         print ('Opening Enttec USB DMX Pro on', self.ser.port, 'at', self.ser.baudrate, 'baud')
         self.ser.open()
+
+        # if you add or modify DMX channels, adjust below!
         self.device_states = [0]*40
         self.name_to_address_map = {
             "mister_1": 0,

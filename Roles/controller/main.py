@@ -54,7 +54,11 @@ class Timer(threading.Thread):
 
 
 class SamOS(object):
+    ''' Class that manages our wetlands (sets up and updates genetic algo'''
+
     def __init__(self, message_target):
+        ''' initializes all the wetlands. '''
+
         self.message_target = message_target
         self.wetlands = {}
 
@@ -64,13 +68,16 @@ class SamOS(object):
                 with open(storage, 'r') as infile:
                     wetland = pickle.load(infile)
             else:
-                wetland = genetics.Population(CLIENT_FITNESS_LABELS[hostname])
+                # creates a new wetlands if we are starting from scratch
+                # sets the mutation_rate and pop_max
+                wetland = genetics.Population(CLIENT_FITNESS_LABELS[hostname], mutation_rate=0.01, pop_max=10)
 
             self.wetlands[hostname] = wetland
             env_state = wetland.get_current_state()
             self.message_target.add_to_queue("local/env_state/response", (hostname, env_state))
 
     def update_wetland(self, hostname, filename):
+        ''' Updates the a wetland with a new image '''
         wetland = self.wetlands[hostname]
 
         if wetland.finished is True:
@@ -130,11 +137,14 @@ class Main(threading.Thread):
             try:
                 topic, data = self.queue.get(True)
 
+                # listen for the timer function (every 5 seconds)
                 if topic == "local/timer/response":
+                    # tell the PIs to capture an image
                     self.network.thirtybirds.send("wetlands-environment-1/image_capture/request","")
                     self.network.thirtybirds.send("wetlands-environment-2/image_capture/request","")
                     self.network.thirtybirds.send("wetlands-environment-3/image_capture/request","")
 
+                # listening for the PIs to recieve an image
                 if topic == "controller/image_capture/response":
                     hostname, image_as_string = data
                     timestamp = int(time.time())
