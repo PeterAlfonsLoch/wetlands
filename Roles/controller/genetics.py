@@ -5,6 +5,7 @@ Thanks Dan!!
 
 import label_image
 import random
+import json
 
 DMX_VALUE_RANGES = {
     "mister_1":     [0,255],
@@ -58,9 +59,6 @@ class DNA(object):
         return self.genes
 
     def calculate_fitness(self):
-        # self.fitness = random.random()
-        # return self.fitness
-        #
         scores = label_image.label(self.image)
         scores = dict(scores)
         self.fitness = scores.get(self.fitness_label, 0)
@@ -140,6 +138,21 @@ class Population(object):
     def get_average_fitness(self):
         total = sum([p.fitness for p in self.population])
         return float(total) / float(len(self.population))
+
+    def to_dict(self):
+        pop = [{'image': p.image, 'fitness': p.fitness, 'genes': p.genes} for p in self.population]
+
+        out = {
+            'generations': self.generations,
+            'finished': self.finished,
+            'mutation_rate': self.mutation_rate,
+            'finished_thresh': self.finished_thresh,
+            'fitness_label': self.fitness_label,
+            'pop_max': self.pop_max,
+            'current_dna': self.current_dna,
+            'population': pop
+        }
+
 
 
 if __name__ == '__main__':

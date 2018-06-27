@@ -76,7 +76,7 @@ class SamOS(object):
         if wetland.finished is True:
             return True
 
-        if wetland.current_dna < len(wetland.population):
+        if wetland.current_dna < len(wetland.population) - 1:
             wetland.calculate_current_fitness(filename)
             wetland.current_dna += 1
         else:
@@ -142,7 +142,7 @@ class Main(threading.Thread):
                     pathname = "Captures/{}".format(filename)
                     with open(pathname, "wb") as fh:
                         fh.write(image_as_string.decode("base64"))
-                    self.samos.update_wetland(hostname, filename)
+                    self.samos.update_wetland(hostname, pathname)
 
                 if topic == "local/env_state/response":
                     hostname, env_state = data
