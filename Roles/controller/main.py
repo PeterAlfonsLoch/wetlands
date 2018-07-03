@@ -43,14 +43,15 @@ class Network(object):
 
 
 class Timer(threading.Thread):
-    def __init__(self, message_target):
+    def __init__(self, message_target, delay_between_photos=5.0):
         threading.Thread.__init__(self)
-        self.delay_between_photos = 5.0 # seconds
+        self.delay_between_photos = delay_between_photos # seconds
         self.message_target = message_target
     def run(self):
         while True:
-            self.message_target.add_to_queue("local/timer/response","")
             time.sleep(self.delay_between_photos)
+            print 'send capture'
+            self.message_target.add_to_queue("local/timer/response","")
 
 
 class SamOS(object):

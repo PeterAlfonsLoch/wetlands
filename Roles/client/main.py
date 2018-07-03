@@ -213,7 +213,7 @@ class Main(threading.Thread):
                     image_as_string = self.images.get_image_as_base64(filename)
                     self.network.thirtybirds.send("controller/image_capture/response", (self.hostname,image_as_string))
 
-                if topic == "wetlands-environment-1/env_state/set":
+                if topic == "{}/env_state/set".format(self.hostname):
                     self.dmx.add_to_queue("local/env_state/set", msg)
 
             except Exception as e:
