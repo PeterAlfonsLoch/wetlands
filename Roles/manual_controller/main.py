@@ -115,11 +115,13 @@ class Sketch(threading.Thread):
         threading.Thread.__init__(self)
         self.message_target = message_target
         self.setup()
+        self.daemon = True
+        self.start()
 
     def set_state(self, hostname, env_state):
         self.message_target.add_to_queue("local/env_state/response", (hostname, env_state))
 
-    def set_items(self, hostname, **kwargs):
+    def set_values(self, hostname, **kwargs):
         self.message_target.add_to_queue("local/env_state/response", (hostname, kwargs))
 
     def take_photo(self, hostname):
@@ -128,10 +130,10 @@ class Sketch(threading.Thread):
     def set_light(self, hostname, light_number, dimmer=0, r=0, g=0, b=0):
         light_name = 'dj_light_{}_'.format(light_number)
         state = {}
-        state[light_name+'_r'] = r
-        state[light_name+'_g'] = g
-        state[light_name+'_b'] = b
-        state[light_name+'_d'] = dimmer
+        state[light_name + 'r'] = r
+        state[light_name + 'g'] = g
+        state[light_name + 'b'] = b
+        state[light_name + 'd'] = dimmer
         self.set_state(hostname, state)
 
     def setup(self):
@@ -156,11 +158,85 @@ class PhotoTaker(Sketch):
         self.take_photo('wetlands-environment-1')
         time.sleep(self.delay)
 
+class StateExample(Sketch):
+    def draw(self):
+        self.set_state('wetlands-environment-1', {
+            "mister_1": 0,
+            "mister_2": 0,
+            "pump": 0,
+            "grow_light": 0,
+            "dj_light_2_d": 255,
+            "dj_light_2_r": 9,
+            "dj_light_2_g": 10,
+            "dj_light_2_b": 11,
+            "dj_light_1_d": 255,
+            "dj_light_1_r": 16,
+            "dj_light_1_g": 17,
+            "dj_light_1_b": 18,
+            "raindrops_1": 255,
+            "raindrops_2": 255,
+            "raindrops_3": 255,
+        })
+        time.sleep(1)
+        self.set_state('wetlands-environment-1', {
+            "mister_1": 0,
+            "mister_2": 0,
+            "pump": 0,
+            "grow_light": 0,
+            "dj_light_2_d": 0,
+            "dj_light_2_r": 9,
+            "dj_light_2_g": 10,
+            "dj_light_2_b": 11,
+            "dj_light_1_d": 0,
+            "dj_light_1_r": 16,
+            "dj_light_1_g": 17,
+            "dj_light_1_b": 18,
+            "raindrops_1": 0,
+            "raindrops_2": 0,
+            "raindrops_3": 0,
+        })
+        time.sleep(6)
+
+class LightsTest(Sketch):
+    def draw(self):
+        print 'lights'
+
+        r1 = random.randint(0, 255)
+        g1 = random.randint(0, 255)
+        b1 = random.randint(0, 255)
+
+        self.set_light('wetlands-environment-1', light_number=1, r=r1, b=b1, g=g1, dimmer=255)
+
+        time.sleep(1)
+
+
+class LightsTest2(Sketch):
+    def setup(self):
+        self.r = 0
+        self.b = 0
+        self.g = 0
+
+    def draw(self):
+        self.r += 10
+        if self.r > 255:
+            self.r = 0
+
+        self.set_light('wetlands-environment-1', light_number=2, r=self.r, b=self.b, g=self.g, dimmer=255)
+        time.sleep(0.1)
+
 class Dripper(Sketch):
     def draw(self):
-        print 'capture'
-        self.take_photo('wetlands-environment-2')
-        time.sleep(15)
+        self.set_values('wetlands-environment-1', raindrops_1=255)
+        time.sleep(0.5)
+        self.set_values('wetlands-environment-1', raindrops_1=0)
+        time.sleep(random.randint(3, 6))
+
+class MisterExample(Sketch):
+    def draw(self):
+        self.set_values('wetlands-environment-1', mister_1=255)
+        time.sleep(10)
+        self.set_values('wetlands-environment-1', mister_1=0)
+        time.sleep(random.randint(10, 20))
 
 '''END TEGA STUFF'''
 
@@ -171,7 +247,10 @@ def init(hostname):
 
     '''TEGA STUFF HERE'''
     photos = PhotoTaker(main)
-    photos.start()
+    dripper = Dripper(main)
+    lights = LightsTest(main)
+    lights2 = LightsTest2(main)
+    mister = MisterExample(main)
 
     '''END TEGA STUFF'''
 
