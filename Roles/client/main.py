@@ -181,7 +181,7 @@ class Main(threading.Thread):
         #self.network.thirtybirds.subscribe_to_topic("reboot")
         #self.network.thirtybirds.subscribe_to_topic("remote_update")
         #self.network.thirtybirds.subscribe_to_topic("remote_update_scripts")
-        self.network.thirtybirds.subscribe_to_topic("wetlands-environment-1/")
+        self.network.thirtybirds.subscribe_to_topic(self.hostname)
         self.network.thirtybirds.subscribe_to_topic("wetlands-environment-all/")
 
     def network_message_handler(self, topic_msg):
@@ -206,7 +206,7 @@ class Main(threading.Thread):
             try:
                 topic, msg = self.queue.get(True)
 
-                if topic == "wetlands-environment-1/image_capture/request":
+                if topic == "{}/image_capture/request".format(self.hostname):
                     self.images.delete_captures()
                     filename = "{}{}".format(self.hostname, ".png")
                     self.images.capture_image(filename)

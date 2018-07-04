@@ -56,8 +56,12 @@ if hostname in settings.client_names:
 elif hostname in settings.server_names:
     role = "controller"
 
+elif hostname == "manual":
+    role = "manual_controller"
+
 elif hostname in settings.dashboard_names:
     role = "dashboard"
 
+print 'init', hostname, role
 host = importlib.import_module("Roles.%s.main" % (role))
 client = host.init(hostname)
