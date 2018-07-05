@@ -63,8 +63,11 @@ class SamOS(object):
         self.message_target = message_target
         self.wetlands = {}
 
+        print 'initializing SAMOS'
+
         for hostname in CLIENT_FITNESS_LABELS:
             storage = hostname + '.pkl'
+            print 'loading wetlands', hostname, 'from', storage
             if os.path.exists(storage):
                 with open(storage, 'r') as infile:
                     wetland = pickle.load(infile)
@@ -72,6 +75,8 @@ class SamOS(object):
                 # creates a new wetlands if we are starting from scratch
                 # sets the mutation_rate and pop_max
                 wetland = genetics.Population(CLIENT_FITNESS_LABELS[hostname], mutation_rate=0.01, pop_max=10)
+                with open(storage, 'w') as outfile:
+                    pickle.dump(wetland, outfile)
 
             self.wetlands[hostname] = wetland
             env_state = wetland.get_current_state()
@@ -157,6 +162,8 @@ class Main(threading.Thread):
 
                 if topic == "local/env_state/response":
                     hostname, env_state = data
+                    print 'sending to', hostname
+                    print env_state
                     self.network.thirtybirds.send("{}/env_state/set".format(hostname), env_state)
 
                     # iteration = "iteration {}".format(random.randint(1, 295147905179352825856))

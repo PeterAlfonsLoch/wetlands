@@ -63,6 +63,7 @@ class DNA(object):
     def calculate_fitness(self):
         scores = label_image.label(self.image)
         scores = dict(scores)
+        print scores
         self.fitness = scores.get(self.fitness_label, 0)
         return self.fitness
 

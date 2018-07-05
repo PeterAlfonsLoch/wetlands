@@ -155,12 +155,12 @@ class PhotoTaker(Sketch):
 
     def draw(self):
         print 'capture'
-        self.take_photo('wetlands-environment-1')
+        self.take_photo('wetlands-environment-3')
         time.sleep(self.delay)
 
 class StateExample(Sketch):
     def draw(self):
-        self.set_state('wetlands-environment-1', {
+        self.set_state('wetlands-environment-3', {
             "mister_1": 0,
             "mister_2": 0,
             "pump": 0,
@@ -178,7 +178,7 @@ class StateExample(Sketch):
             "raindrops_3": 255,
         })
         time.sleep(1)
-        self.set_state('wetlands-environment-1', {
+        self.set_state('wetlands-environment-3', {
             "mister_1": 0,
             "mister_2": 0,
             "pump": 0,
@@ -205,7 +205,7 @@ class LightsTest(Sketch):
         g1 = random.randint(0, 255)
         b1 = random.randint(0, 255)
 
-        self.set_light('wetlands-environment-1', light_number=1, r=r1, b=b1, g=g1, dimmer=255)
+        self.set_light('wetlands-environment-3', light_number=1, r=r1, b=b1, g=g1, dimmer=255)
 
         time.sleep(1)
 
@@ -221,21 +221,21 @@ class LightsTest2(Sketch):
         if self.r > 255:
             self.r = 0
 
-        self.set_light('wetlands-environment-1', light_number=2, r=self.r, b=self.b, g=self.g, dimmer=255)
+        self.set_light('wetlands-environment-3', light_number=2, r=self.r, b=self.b, g=self.g, dimmer=255)
         time.sleep(0.1)
 
 class Dripper(Sketch):
     def draw(self):
-        self.set_values('wetlands-environment-1', raindrops_1=255)
+        self.set_values('wetlands-environment-3', raindrops_1=255)
         time.sleep(0.5)
-        self.set_values('wetlands-environment-1', raindrops_1=0)
+        self.set_values('wetlands-environment-3', raindrops_1=0)
         time.sleep(random.randint(3, 6))
 
 class MisterExample(Sketch):
     def draw(self):
-        self.set_values('wetlands-environment-1', mister_1=255)
+        self.set_values('wetlands-environment-3', mister_1=255)
         time.sleep(10)
-        self.set_values('wetlands-environment-1', mister_1=0)
+        self.set_values('wetlands-environment-3', mister_1=0)
         time.sleep(random.randint(10, 20))
 
 '''END TEGA STUFF'''
