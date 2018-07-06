@@ -53,6 +53,35 @@ class Images(object):
         with open(pathname, "rb") as image_file:
             return base64.b64encode(image_file.read())
 
+
+########################
+## SPEECH
+########################
+class Speech(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.queue = Queue.Queue()
+
+    def number_to_audio_files(self, number):
+        out = []
+        number = str(number)
+        for digit in number:
+            out.append(BASE_PATH + 'audio/' + digit)
+        return out
+
+    def run(self):
+        while True:
+            topic, msg = self.queue.get(True)
+            if topic == "local/speech/say":
+                generation, iteration = msg
+                generation_files = number_to_audio_files(generation)
+                iteration_files = number_to_audio_files(iteration)
+
+                print generation, iteration
+                print generation_files
+                print iteration_files
+
+
 ########################
 ## DMX
 ########################
@@ -137,12 +166,6 @@ class DMX(threading.Thread):
                     self.device_states[int(address)] = int(value)
                 self.sendmsg(6, self.device_states)
 
-            # if topic == "local/speak":
-            #     pass
-                # code for speaking here!
-                # speak(msg)
-
-
 
 ########################
 ## NETWORK
@@ -177,6 +200,9 @@ class Main(threading.Thread):
         self.images = Images(self.capture_path)
         self.dmx = DMX()
         self.dmx.start()
+
+        self.speech = Speech()
+        self.speech.start()
 
         #self.network.thirtybirds.subscribe_to_topic("reboot")
         #self.network.thirtybirds.subscribe_to_topic("remote_update")
@@ -215,6 +241,9 @@ class Main(threading.Thread):
 
                 if topic == "{}/env_state/set".format(self.hostname):
                     self.dmx.add_to_queue("local/env_state/set", msg)
+
+                if topic == "{}/speech/say".format(self.hostname):
+                    self.speech.add_to_queue("local/speech/say", msg)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()

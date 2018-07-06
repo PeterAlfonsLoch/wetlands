@@ -72,10 +72,13 @@ class SamOS(object):
                 # creates a new wetlands if we are starting from scratch
                 # sets the mutation_rate and pop_max
                 wetland = genetics.Population(CLIENT_FITNESS_LABELS[hostname], mutation_rate=0.01, pop_max=10)
+                with open(storage, 'w') as outfile:
+                    pickle.dump(wetland, outfile)
 
             self.wetlands[hostname] = wetland
             env_state = wetland.get_current_state()
             self.message_target.add_to_queue("local/env_state/response", (hostname, env_state))
+            self.message_target.add_to_queue("local/speech/response", (hostname, wetland.generation, wetland.current_dna + 1))
 
     def update_wetland(self, hostname, filename):
         ''' Updates the a wetland with a new image '''
@@ -100,6 +103,7 @@ class SamOS(object):
         next_env_state = wetland.get_current_state()
         print next_env_state
         self.message_target.add_to_queue("local/env_state/response", (hostname, next_env_state))
+        self.message_target.add_to_queue("local/speech/response", (hostname, wetland.generation, wetland.current_dna + 1))
 
 
 # Main handles network send/recv and can see all other classes directly
@@ -160,7 +164,9 @@ class Main(threading.Thread):
                     self.network.thirtybirds.send("{}/env_state/set".format(hostname), env_state)
 
                     # iteration = "iteration {}".format(random.randint(1, 295147905179352825856))
-                    # self.network.thirtybirds.send("{}/speak".format(hostname), iteration)
+                if topic == "local/speech/response":
+                    hostname, generation, iteration = data
+                    self.network.thirtybirds.send("{}/speech/say".format(hostname), (generation, iteration))
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
