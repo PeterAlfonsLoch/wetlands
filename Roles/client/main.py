@@ -74,8 +74,8 @@ class Speech(threading.Thread):
             topic, msg = self.queue.get(True)
             if topic == "local/speech/say":
                 generation, iteration = msg
-                generation_files = number_to_audio_files(generation)
-                iteration_files = number_to_audio_files(iteration)
+                generation_files = self.number_to_audio_files(generation)
+                iteration_files = self.number_to_audio_files(iteration)
 
                 print generation, iteration
                 print generation_files
@@ -127,6 +127,9 @@ class DMX(threading.Thread):
             "dj_light_1_r": 16,
             "dj_light_1_g": 17,
             "dj_light_1_b": 18,
+            "dj_light_3_r": 27,
+            "dj_light_3_g": 28,
+            "dj_light_3_b": 29,
             "raindrops_1": 32,
             "raindrops_2": 33,
             "raindrops_3": 34,

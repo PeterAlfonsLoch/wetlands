@@ -25,6 +25,9 @@ DMX_VALUE_RANGES = {
     "dj_light_2_r": range(0,255),
     "dj_light_2_g": range(0,255),
     "dj_light_2_b": range(0,255),
+     "dj_light_3_r": range(0,255),
+    "dj_light_3_g": range(0,255),
+    "dj_light_3_b": range(0,255),
 }
 
 def remap(value, source_range, target_range):
@@ -63,6 +66,7 @@ class DNA(object):
     def calculate_fitness(self):
         scores = label_image.label(self.image)
         scores = dict(scores)
+        print scores
         self.fitness = scores.get(self.fitness_label, 0)
         return self.fitness
 

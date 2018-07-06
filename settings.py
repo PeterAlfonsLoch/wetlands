@@ -17,7 +17,7 @@ server_names = [
     "wetlands-controller",
     "avl-visual",
     "qua.local",
-    "wetlands-controller",
+    "wetlands-controller.local",
     "avl-visual",
     "Tegas-MacBook-Pro.local"
 ]
