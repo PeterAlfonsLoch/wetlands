@@ -69,6 +69,9 @@ class Speech(threading.Thread):
             out.append(BASE_PATH + 'audio/' + digit)
         return out
 
+    def add_to_queue(self, topic, msg):
+        self.queue.put((topic, msg))
+
     def run(self):
         while True:
             topic, msg = self.queue.get(True)
