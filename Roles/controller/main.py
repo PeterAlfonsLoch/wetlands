@@ -22,7 +22,7 @@ THIRTYBIRDS_PATH = "%s/thirtybirds_2_0" % (UPPER_PATH )
 CLIENT_FITNESS_LABELS = {
     "wetlands-environment-1": "landscape painting",
     "wetlands-environment-2": "wetlands landscape",
-    "wetlands-environment-3": "crowd",
+    "wetlands-environment-3": "wetlands landscape",
 }
 
 from thirtybirds_2_0.Network.manager import init as network_init
@@ -43,7 +43,7 @@ class Network(object):
 
 
 class Timer(threading.Thread):
-    def __init__(self, message_target, delay_between_photos=5.0):
+    def __init__(self, message_target, delay_between_photos=20):
         threading.Thread.__init__(self)
         self.delay_between_photos = delay_between_photos # seconds
         self.message_target = message_target
@@ -74,7 +74,7 @@ class SamOS(object):
             else:
                 # creates a new wetlands if we are starting from scratch
                 # sets the mutation_rate and pop_max
-                wetland = genetics.Population(CLIENT_FITNESS_LABELS[hostname], mutation_rate=0.01, pop_max=10)
+                wetland = genetics.Population(CLIENT_FITNESS_LABELS[hostname], mutation_rate=0.02, pop_max=50)
                 with open(storage, 'w') as outfile:
                     pickle.dump(wetland, outfile)
 
