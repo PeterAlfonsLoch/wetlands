@@ -85,9 +85,9 @@ class Speech(threading.Thread):
                 print generation_files
                 print iteration_files
 
-                all_audio = [BASE_PATH + 'audio/generation.wav']
+                all_audio = [BASE_PATH + '/audio/generation.wav']
                 all_audio += generation_files
-                all_audio = [BASE_PATH + 'audio/iteration.wav']
+                all_audio = [BASE_PATH + '/audio/iteration.wav']
                 all_audio += iteration_files
 
                 for audio_file in all_audio:
