@@ -67,7 +67,7 @@ class Speech(threading.Thread):
         out = []
         number = str(number)
         for digit in number:
-            out.append(BASE_PATH + 'audio/' + digit)
+            out.append(BASE_PATH + '/audio/' + digit + '.wav')
         return out
 
     def add_to_queue(self, topic, msg):
