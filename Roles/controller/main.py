@@ -42,16 +42,18 @@ class Network(object):
         )
 
 
-class Timer(threading.Thread):
-    def __init__(self, message_target, delay_between_photos=20):
+class PhotoTimer(threading.Thread):
+    def __init__(self, message_target, hostname, delay_between_photos=20, initial_delay=0):
         threading.Thread.__init__(self)
         self.delay_between_photos = delay_between_photos # seconds
+        self.initial_delay = initial_delay # seconds
+        self.hostname = hostname
         self.message_target = message_target
     def run(self):
+        time.sleep(self.initial_delay)
         while True:
+            self.message_target.add_to_queue("local/timer/response", self.hostname)
             time.sleep(self.delay_between_photos)
-            print 'send capture'
-            self.message_target.add_to_queue("local/timer/response","")
 
 
 class SamOS(object):
@@ -117,8 +119,13 @@ class Main(threading.Thread):
         self.queue = Queue.Queue()
         self.network.thirtybirds.subscribe_to_topic("controller/")
         self.samos = SamOS(self)
-        self.timer = Timer(self)
-        self.timer.start()
+
+        self.timer1 = PhotoTimer(self, "wetlands-environment-1", initial_delay=10.0, delay_between_photos=20)
+        self.timer2 = PhotoTimer(self, "wetlands-environment-2", initial_delay=12.0, delay_between_photos=21)
+        self.timer3 = PhotoTimer(self, "wetlands-environment-3", initial_delay=13.0, delay_between_photos=22)
+        self.timer1.start()
+        self.timer2.start()
+        self.timer3.start()
 
     def network_message_handler(self, topic_data):
         # this method runs in the thread of the caller, not the tread of Main
@@ -148,9 +155,7 @@ class Main(threading.Thread):
                 # listen for the timer function (every 5 seconds)
                 if topic == "local/timer/response":
                     # tell the PIs to capture an image
-                    self.network.thirtybirds.send("wetlands-environment-1/image_capture/request","")
-                    self.network.thirtybirds.send("wetlands-environment-2/image_capture/request","")
-                    self.network.thirtybirds.send("wetlands-environment-3/image_capture/request","")
+                    self.network.thirtybirds.send("{}/image_capture/request".format(data),"")
 
                 # listening for the PIs to recieve an image
                 if topic == "controller/image_capture/response":
