@@ -1,3 +1,7 @@
+.DS_Store
+wetlands-environment*.pkl
+Captures/*.png
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
