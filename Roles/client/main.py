@@ -16,6 +16,7 @@ import sys
 import threading
 import time
 import traceback
+import subprocess
 
 from thirtybirds_2_0.Network.manager import init as thirtybirds_network
 from thirtybirds_2_0.Adaptors.Cameras.c920 import init as camera_init
@@ -83,6 +84,14 @@ class Speech(threading.Thread):
                 print generation, iteration
                 print generation_files
                 print iteration_files
+
+                all_audio = [BASE_PATH + 'audio/generation.wav']
+                all_audio += generation_files
+                all_audio = [BASE_PATH + 'audio/iteration.wav']
+                all_audio += iteration_files
+
+                for audio_file in all_audio:
+                    subprocess.call(['omxplayer', audio_file])
 
 
 ########################
