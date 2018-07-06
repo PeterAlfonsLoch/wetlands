@@ -34,19 +34,6 @@ class Network(object):
         )
 
 
-
-class SamOS(object):
-    ''' Class that manages our wetlands (sets up and updates genetic algo'''
-
-    def __init__(self, message_target):
-        ''' initializes all the wetlands. '''
-
-        self.message_target = message_target
-
-        # self.message_target.add_to_queue("local/env_state/response", (hostname, env_state))
-
-
-
 # Main handles network send/recv and can see all other classes directly
 class Main(threading.Thread):
     def __init__(self, hostname):
