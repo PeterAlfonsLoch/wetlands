@@ -105,9 +105,9 @@ patterns[1][32] = 255
 patterns[1][33] = 255
 
 #misters
-patterns[1][1] = 0
-patterns[1][2] = 0
-patterns[1][3] = 0
+patterns[1][0] = 255
+patterns[1][1] = 255
+patterns[1][2] = 255
 
 #patterns[1][2] = 255
 # Endless demo loop
