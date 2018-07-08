@@ -56,6 +56,43 @@ class PhotoTimer(threading.Thread):
             time.sleep(self.delay_between_photos)
 
 
+class Sketch(threading.Thread):
+    def __init__(self, message_target):
+        threading.Thread.__init__(self)
+        self.message_target = message_target
+        self.setup()
+        self.daemon = True
+        self.start()
+
+    def set_state(self, hostname, env_state):
+        self.message_target.add_to_queue("local/env_state/response", (hostname, env_state))
+
+    def set_values(self, hostname, **kwargs):
+        self.message_target.add_to_queue("local/env_state/response", (hostname, kwargs))
+
+    def take_photo(self, hostname):
+        self.message_target.add_to_queue("local/image_capture/response", hostname)
+
+    def set_light(self, hostname, light_number, dimmer=0, r=0, g=0, b=0):
+        light_name = 'dj_light_{}_'.format(light_number)
+        state = {}
+        state[light_name + 'r'] = r
+        state[light_name + 'g'] = g
+        state[light_name + 'b'] = b
+        state[light_name + 'd'] = dimmer
+        self.set_state(hostname, state)
+
+    def setup(self):
+        pass
+
+    def draw(self):
+        pass
+
+    def run(self):
+        while True:
+            self.draw()
+
+
 class SamOS(object):
     ''' Class that manages our wetlands (sets up and updates genetic algo'''
 
