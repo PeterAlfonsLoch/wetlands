@@ -66,6 +66,7 @@ class Speech(threading.Thread):
     def number_to_audio_files(self, number):
         out = []
         number = str(number)
+        number = number.replace('0.', '')
         for digit in number:
             out.append(BASE_PATH + '/audio/' + digit + '.wav')
         return out
@@ -77,18 +78,22 @@ class Speech(threading.Thread):
         while True:
             topic, msg = self.queue.get(True)
             if topic == "local/speech/say":
-                generation, iteration = msg
+                generation, iteration, fitness = msg
                 generation_files = self.number_to_audio_files(generation)
                 iteration_files = self.number_to_audio_files(iteration)
+                fitness_files = self.number_to_audio_files(fitness)
 
                 print generation, iteration
                 print generation_files
                 print iteration_files
 
-                all_audio = [BASE_PATH ]#+ '/audio/generation.wav']
-                all_audio += generation_files
-                all_audio += [BASE_PATH ]#+ '/audio/iteration.wav']
-                all_audio += iteration_files
+                all_audio = []
+                # all_audio = [BASE_PATH + '/audio/generation.wav']
+                # all_audio += generation_files
+                # all_audio += [BASE_PATH + '/audio/iteration.wav']
+                # all_audio += iteration_files
+
+                all_audio += fitness_files
 
                 for audio_file in all_audio:
                     subprocess.call(['omxplayer', audio_file])

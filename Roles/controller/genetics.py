@@ -110,6 +110,9 @@ class Population(object):
     def get_current_state(self):
         return self.population[self.current_dna].genes
 
+    def get_current_fitness(self):
+        return self.population[self.current_dna].fitness
+
     def natural_selection(self):
         self.mating_pool = []
         max_fitness = max([p.fitness for p in self.population])

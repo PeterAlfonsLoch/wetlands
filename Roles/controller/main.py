@@ -120,17 +120,19 @@ class SamOS(object):
             self.wetlands[hostname] = wetland
             env_state = wetland.get_current_state()
             self.message_target.add_to_queue("local/env_state/response", (hostname, env_state))
-            self.message_target.add_to_queue("local/speech/response", (hostname, wetland.generations + 1, wetland.current_dna + 1))
+            self.message_target.add_to_queue("local/speech/response", (hostname, wetland.generations + 1, wetland.current_dna + 1, wetland.get_current_fitness()))
 
     def update_wetland(self, hostname, filename):
         ''' Updates the a wetland with a new image '''
         wetland = self.wetlands[hostname]
+        current_fitness = wetland.get_current_fitness()
 
         if wetland.finished is True:
             return True
 
         if wetland.current_dna < len(wetland.population) - 1:
             wetland.calculate_current_fitness(filename)
+            current_fitness = wetland.get_current_fitness()
             wetland.current_dna += 1
         else:
             wetland.natural_selection()
@@ -145,7 +147,7 @@ class SamOS(object):
         next_env_state = wetland.get_current_state()
         print next_env_state
         self.message_target.add_to_queue("local/env_state/response", (hostname, next_env_state))
-        self.message_target.add_to_queue("local/speech/response", (hostname, wetland.generations + 1, wetland.current_dna + 1))
+        self.message_target.add_to_queue("local/speech/response", (hostname, wetland.generations + 1, wetland.current_dna + 1, current_fitness))
 
 
 # Main handles network send/recv and can see all other classes directly
@@ -212,8 +214,8 @@ class Main(threading.Thread):
 
                     # iteration = "iteration {}".format(random.randint(1, 295147905179352825856))
                 if topic == "local/speech/response":
-                    hostname, generation, iteration = data
-                    self.network.thirtybirds.send("{}/speech/say".format(hostname), (generation, iteration))
+                    hostname, generation, iteration, fitness = data
+                    self.network.thirtybirds.send("{}/speech/say".format(hostname), (generation, iteration, fitness))
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
