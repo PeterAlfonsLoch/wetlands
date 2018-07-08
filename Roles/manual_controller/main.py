@@ -13,6 +13,10 @@ import traceback
 import socket
 import sys
 
+WL1 = "wetlands-environment-1"
+WL2 = "wetlands-environment-2"
+WL3 = "wetlands-environment-3"
+
 BASE_PATH = os.path.dirname(os.path.realpath(__file__))
 UPPER_PATH = os.path.split(os.path.dirname(os.path.realpath(__file__)))[0]
 THIRTYBIRDS_PATH = "%s/thirtybirds_2_0" % (UPPER_PATH )
@@ -220,10 +224,90 @@ class Dripper(Sketch):
 
 class MisterExample(Sketch):
     def draw(self):
-        self.set_values('wetlands-environment-3', mister_1=255)
+        self.set_values('wetlands-environment-2', mister_1=255)
         time.sleep(10)
-        self.set_values('wetlands-environment-3', mister_1=0)
-        time.sleep(random.randint(10, 20))
+        self.set_values('wetlands-environment-2', mister_1=0)
+        time.sleep(random.randint(2, 10))
+
+class RedBlink(Sketch):
+    def draw(self):
+        self.set_light('wetlands-environment-3',  1, 255,255,0,0)
+        time.sleep(0.5)
+        self.set_light('wetlands-environment-3', 1, 0,0,0,0)
+        time.sleep(0.5)
+
+
+class Three(Sketch):
+    def draw(self):
+        self.set_values('wetlands-environment-1',raindrops_1=255)
+        self.set_values('wetlands-environment-1',raindrops_2=255)
+        self.set_values('wetlands-environment-1',raindrops_3=255)
+        time.sleep(0.2)
+        self.set_values('wetlands-environment-1',raindrops_1=0)
+        self.set_values('wetlands-environment-1',raindrops_2=0)
+        self.set_values('wetlands-environment-1',raindrops_3=0)
+        time.sleep(0.2)
+        self.set_light('wetlands-environment-1', 1, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
+        self.set_light('wetlands-environment-1', 2, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
+        time.sleep(2)
+        self.set_light('wetlands-environment-1', 1, 0,0,0,0)
+        self.set_light('wetlands-environment-1', 2, 0,0,0,0)
+        time.sleep(0.2) 
+
+class TestAll(Sketch):
+    def draw(self):
+        names = [WL1, WL2, WL3]
+        for n in names:
+            self.set_values(n, mister_1=255)
+            self.set_values(n, mister_2=255)
+            self.set_light(n, 1, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
+            self.set_light(n, 2, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
+            time.sleep(3)
+            self.set_values(n, mister_1=0)
+            self.set_values(n, mister_2=0)
+            time.sleep(1)
+            self.set_light(n, 1, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
+            self.set_light(n, 2, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
+            self.set_values(n,raindrops_1=255)
+            self.set_values(n,raindrops_2=255)
+            self.set_values(n,raindrops_3=255)
+            time.sleep(0.1)
+            self.set_values(n,raindrops_1=0)
+            self.set_values(n,raindrops_2=0)
+            self.set_values(n,raindrops_3=0)
+            time.sleep(0.2)
+            self.set_values(n,raindrops_1=255)
+            self.set_values(n,raindrops_2=255)
+            self.set_values(n,raindrops_3=255)
+            time.sleep(0.1)
+            self.set_values(n,raindrops_1=0)
+            self.set_values(n,raindrops_2=0)
+            self.set_values(n,raindrops_3=0)
+            time.sleep(0.2)
+            self.set_values(n,raindrops_1=255)
+            self.set_values(n,raindrops_2=255)
+            self.set_values(n,raindrops_3=255)
+            time.sleep(0.1)
+            self.set_values(n,raindrops_1=0)
+            self.set_values(n,raindrops_2=0)
+            self.set_values(n,raindrops_3=0)
+            time.sleep(0.2)
+       # self.set_values('wetlands-environment-2',raindrops_1=255)
+        #self.set_values('wetlands-environment-2',raindrops_2=255)
+        #self.set_values('wetlands-environment-2',raindrops_3=255)
+        #time.sleep(0.2)
+        #self.set_values('wetlands-environment-2',raindrops_1=0)
+        #self.set_values('wetlands-environment-2',raindrops_2=0)
+        #self.set_values('wetlands-environment-2',raindrops_3=0)
+        #time.sleep(0.2)
+        #self.set_light('wetlands-environment-2', 1, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
+        #self.set_light('wetlands-environment-2', 2, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
+        #time.sleep(3)
+        #self.set_light('wetlands-environment-2', 1, 0,0,0,0)
+        #self.set_light('wetlands-environment-2', 2, 0,0,0,0)
+        #time.sleep(1) 
+
+
 
 '''END TEGA STUFF'''
 
@@ -233,12 +317,13 @@ def init(hostname):
     main.start()
 
     '''TEGA STUFF HERE'''
-    photos = PhotoTaker(main)
-    dripper = Dripper(main)
-    lights = LightsTest(main)
-    lights2 = LightsTest2(main)
-    mister = MisterExample(main)
-
+    #photos = PhotoTaker(main)
+    #dripper = Dripper(main)
+    #lights = LightsTest(main)
+    #lights2 = LightsTest2(main)
+    #mister = MisterExample(main)
+    #redblink = redBlink(main)
+    test = TestAll(main)
     '''END TEGA STUFF'''
 
     return main
