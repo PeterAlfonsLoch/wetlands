@@ -1,4 +1,4 @@
-import base64
+ßimport base64
 import commands
 import cv2
 import importlib
@@ -144,9 +144,10 @@ class DMX(threading.Thread):
             "dj_light_1_r": 16,
             "dj_light_1_g": 17,
             "dj_light_1_b": 18,
-            "dj_light_3_r": 27,
-            "dj_light_3_g": 28,
-            "dj_light_3_b": 29,
+            "dj_light_3_d": 27,
+            "dj_light_3_r": 28,
+            "dj_light_3_g": 29,
+            "dj_light_3_b": 30,
             "raindrops_1": 32,
             "raindrops_2": 33,
             "raindrops_3": 34,

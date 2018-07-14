@@ -121,6 +121,7 @@ class SamOS(object):
             env_state = wetland.get_current_state()
             self.message_target.add_to_queue("local/env_state/response", (hostname, env_state))
             self.message_target.add_to_queue("local/speech/response", (hostname, wetland.generations + 1, wetland.current_dna + 1, wetland.get_current_fitness()))
+            print('current fitness', wetland.get_current_fitness())
 
     def update_wetland(self, hostname, filename):
         ''' Updates the a wetland with a new image '''
@@ -148,6 +149,8 @@ class SamOS(object):
         print next_env_state
         self.message_target.add_to_queue("local/env_state/response", (hostname, next_env_state))
         self.message_target.add_to_queue("local/speech/response", (hostname, wetland.generations + 1, wetland.current_dna + 1, current_fitness))
+        print('current fitness',current_fitness)
+
 
 
 # Main handles network send/recv and can see all other classes directly

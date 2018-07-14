@@ -25,7 +25,8 @@ DMX_VALUE_RANGES = {
     "dj_light_2_r": range(0,255),
     "dj_light_2_g": range(0,255),
     "dj_light_2_b": range(0,255),
-     "dj_light_3_r": range(0,255),
+    "dj_light_3_d": [255],
+    "dj_light_3_r": range(0,255),
     "dj_light_3_g": range(0,255),
     "dj_light_3_b": range(0,255),
 }

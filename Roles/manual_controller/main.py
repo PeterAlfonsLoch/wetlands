@@ -156,6 +156,10 @@ class StateExample(Sketch):
             "mister_2": 0,
             "pump": 0,
             "grow_light": 0,
+            "dj_light_3_d": 255,
+            "dj_light_3_r": 28,
+            "dj_light_3_g": 29,
+            "dj_light_3_b": 30,
             "dj_light_2_d": 255,
             "dj_light_2_r": 9,
             "dj_light_2_g": 10,
@@ -174,6 +178,10 @@ class StateExample(Sketch):
             "mister_2": 0,
             "pump": 0,
             "grow_light": 0,
+            "dj_light_3_d": 27,
+            "dj_light_3_r": 28,
+            "dj_light_3_g": 29,
+            "dj_light_3_b": 30,
             "dj_light_2_d": 0,
             "dj_light_2_r": 9,
             "dj_light_2_g": 10,
@@ -262,12 +270,14 @@ class TestAll(Sketch):
             self.set_values(n, mister_2=255)
             self.set_light(n, 1, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
             self.set_light(n, 2, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
+            self.set_light(n, 3, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
             time.sleep(3)
             self.set_values(n, mister_1=0)
             self.set_values(n, mister_2=0)
             time.sleep(1)
             self.set_light(n, 1, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
             self.set_light(n, 2, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
+            self.set_light(n, 3, 255,random.randint(0,255),random.randint(0,255),random.randint(0,255))
             self.set_values(n,raindrops_1=255)
             self.set_values(n,raindrops_2=255)
             self.set_values(n,raindrops_3=255)
