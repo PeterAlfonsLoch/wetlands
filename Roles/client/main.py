@@ -1,4 +1,4 @@
-ßimport base64
+import base64
 import commands
 import cv2
 import importlib
