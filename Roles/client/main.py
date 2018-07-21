@@ -88,12 +88,12 @@ class Speech(threading.Thread):
                 print iteration_files
 
                 all_audio = []
-                # all_audio = [BASE_PATH + '/audio/generation.wav']
-                # all_audio += generation_files
-                # all_audio += [BASE_PATH + '/audio/iteration.wav']
-                # all_audio += iteration_files
+                 all_audio = [BASE_PATH + '/audio/generation.wav']
+                 all_audio += generation_files
+                 all_audio += [BASE_PATH + '/audio/iteration.wav']
+                 all_audio += iteration_files
 
-                all_audio += fitness_files
+                # all_audio += fitness_files
 
                 for audio_file in all_audio:
                     subprocess.call(['omxplayer', audio_file])

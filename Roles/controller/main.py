@@ -22,7 +22,7 @@ THIRTYBIRDS_PATH = "%s/thirtybirds_2_0" % (UPPER_PATH )
 CLIENT_FITNESS_LABELS = {
     "wetlands-environment-1": "landscape painting",
     "wetlands-environment-2": "wetlands landscape",
-    "wetlands-environment-3": "wetlands landscape",
+    "wetlands-environment-3": "crowd",
 }
 
 from thirtybirds_2_0.Network.manager import init as network_init
@@ -162,9 +162,9 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("controller/")
         self.samos = SamOS(self)
 
-        self.timer1 = PhotoTimer(self, "wetlands-environment-1", initial_delay=1, delay_between_photos=4)
-        self.timer2 = PhotoTimer(self, "wetlands-environment-2", initial_delay=3, delay_between_photos=11)
-        self.timer3 = PhotoTimer(self, "wetlands-environment-3", initial_delay=7, delay_between_photos=12)
+        self.timer1 = PhotoTimer(self, "wetlands-environment-1", initial_delay=1, delay_between_photos=60)
+        self.timer2 = PhotoTimer(self, "wetlands-environment-2", initial_delay=15, delay_between_photos=60)
+        self.timer3 = PhotoTimer(self, "wetlands-environment-3", initial_delay=30, delay_between_photos=60)
         self.timer1.start()
         self.timer2.start()
         self.timer3.start()
