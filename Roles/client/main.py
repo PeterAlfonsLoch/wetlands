@@ -75,7 +75,6 @@ class Speech(threading.Thread):
         self.queue.put((topic, msg))
 
     def run(self):
-        while True:
             topic, msg = self.queue.get(True)
             if topic == "local/speech/say":
                 generation, iteration, fitness = msg
@@ -134,8 +133,7 @@ class DMX(threading.Thread):
             # "raindrops_3": 33,
             "mister_1": 1,
             "mister_2": 2,
-            "pump": 3,
-            "grow_light": 4,
+            "fan": 3,
             "dj_light_2_d": 8,
             "dj_light_2_r": 9,
             "dj_light_2_g": 10,
