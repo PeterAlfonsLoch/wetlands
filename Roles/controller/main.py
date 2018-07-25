@@ -162,9 +162,9 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("controller/")
         self.samos = SamOS(self)
 
-        self.timer1 = PhotoTimer(self, "wetlands-environment-1", initial_delay=1, delay_between_photos=60)
-        self.timer2 = PhotoTimer(self, "wetlands-environment-2", initial_delay=15, delay_between_photos=60)
-        self.timer3 = PhotoTimer(self, "wetlands-environment-3", initial_delay=30, delay_between_photos=60)
+        self.timer1 = PhotoTimer(self, "wetlands-environment-1", initial_delay=1, delay_between_photos=180)
+        self.timer2 = PhotoTimer(self, "wetlands-environment-2", initial_delay=15, delay_between_photos=180)
+        self.timer3 = PhotoTimer(self, "wetlands-environment-3", initial_delay=30, delay_between_photos=180)
         self.timer1.start()
         self.timer2.start()
         self.timer3.start()

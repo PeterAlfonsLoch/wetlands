@@ -207,7 +207,7 @@ class LightsTest(Sketch):
         time.sleep(1)
 
 
-class LightsTest2(Sketch):
+class LightsTest1(Sketch):
     def setup(self):
         self.r = 0
         self.b = 0
@@ -239,19 +239,136 @@ class LightsTest2(Sketch):
         #self.set_values('wetlands-environment-1',raindrops_1=0)
         #self.set_values('wetlands-environment-1',raindrops_2=0)
         #self.set_values('wetlands-environment-1',raindrops_3=0)
-
-        time.sleep(0.1)
-
-class Dripper(Sketch):
-    def draw(self):
         self.set_values('wetlands-environment-1', raindrops_1=255)
         self.set_values('wetlands-environment-1', raindrops_2=255)
         self.set_values('wetlands-environment-1', raindrops_3=255)
-        time.sleep(0.5)
+        time.sleep(5)
         self.set_values('wetlands-environment-1', raindrops_1=0)
         self.set_values('wetlands-environment-1', raindrops_2=0)
         self.set_values('wetlands-environment-1', raindrops_3=0)
-        time.sleep(random.randint(3, 6))
+        time.sleep(3)
+
+
+        time.sleep(0.1)
+
+class LightsTest2(Sketch):
+    def setup(self):
+        self.r = 0
+        self.b = 0
+        self.g = 0
+
+    def draw(self):
+        self.b += 3
+        if self.b > 255:
+            self.b = 255
+
+        #self.g += 10
+        #if self.g > 255:
+        self.g = 20
+
+        #self.b += 7
+        #if self.b > 255:
+        self.r = 0
+
+
+        self.set_light('wetlands-environment-2', light_number=1, r=self.r, b=self.b, g=self.g, dimmer=255)
+        self.set_light('wetlands-environment-2', light_number=2, r=self.r, b=self.b, g=self.g, dimmer=255)
+        self.set_light('wetlands-environment-2', light_number=3, r=self.r, b=self.b, g=self.g, dimmer=255)
+
+        self.set_values('wetlands-environment-2', mister_1=255)
+        self.set_values('wetlands-environment-2', mister_2=255)
+
+        self.set_values('wetlands-environment-2', fan=255)
+
+        #self.set_values('wetlands-environment-1',raindrops_1=0)
+        #self.set_values('wetlands-environment-1',raindrops_2=0)
+        #self.set_values('wetlands-environment-1',raindrops_3=0)
+        self.set_values('wetlands-environment-2', raindrops_1=255)
+        self.set_values('wetlands-environment-2', raindrops_2=255)
+        self.set_values('wetlands-environment-2', raindrops_3=255)
+        time.sleep(5)
+        self.set_values('wetlands-environment-2', raindrops_1=0)
+        self.set_values('wetlands-environment-2', raindrops_2=0)
+        self.set_values('wetlands-environment-2', raindrops_3=0)
+        time.sleep(3)
+
+
+        time.sleep(0.1)
+
+class LightsTest3(Sketch):
+    def setup(self):
+        self.r = 0
+        self.b = 0
+        self.g = 0
+
+    def draw(self):
+        self.b += 3
+        if self.b > 255:
+            self.b = 255
+
+        #self.g += 10
+        #if self.g > 255:
+        self.g = 20
+
+        #self.b += 7
+        #if self.b > 255:
+        self.r = 0
+
+
+        self.set_light('wetlands-environment-3', light_number=1, r=self.r, b=self.b, g=self.g, dimmer=255)
+        self.set_light('wetlands-environment-3', light_number=2, r=self.r, b=self.b, g=self.g, dimmer=255)
+        self.set_light('wetlands-environment-3', light_number=3, r=self.r, b=self.b, g=self.g, dimmer=255)
+
+        self.set_values('wetlands-environment-3', mister_1=255)
+        self.set_values('wetlands-environment-3', mister_2=255)
+
+        self.set_values('wetlands-environment-3', fan=255)
+
+        #self.set_values('wetlands-environment-1',raindrops_1=0)
+        #self.set_values('wetlands-environment-1',raindrops_2=0)
+        #self.set_values('wetlands-environment-1',raindrops_3=0)
+        self.set_values('wetlands-environment-3', raindrops_1=255)
+        self.set_values('wetlands-environment-3', raindrops_2=255)
+        self.set_values('wetlands-environment-3', raindrops_3=255)
+        time.sleep(5)
+        self.set_values('wetlands-environment-3', raindrops_1=0)
+        self.set_values('wetlands-environment-3', raindrops_2=0)
+        self.set_values('wetlands-environment-3', raindrops_3=0)
+        time.sleep(3)
+
+
+        time.sleep(0.1)
+
+
+
+class Dripper(Sketch):
+    def setup(self):
+        self.r = 0
+        self.b = 0
+        self.g = 0
+    def draw(self):
+        self.r += 3
+        if self.r > 255:
+            self.r = 255
+
+        #self.g += 10
+        #if self.g > 255:
+        self.g = 20
+
+        #self.b += 7
+        #if self.b > 255:
+        self.b = 0
+        self.set_light('wetlands-environment-1', light_number=1, r=self.r, b=self.b, g=self.g, dimmer=255)
+        self.set_light('wetlands-environment-1', light_number=2, r=self.r, b=self.b, g=self.g, dimmer=255)
+        self.set_light('wetlands-environment-1', light_number=3, r=self.r, b=self.b, g=self.g, dimmer=255)
+        self.set_values('wetlands-environment-1', raindrops_1=255)
+        self.set_values('wetlands-environment-1', raindrops_2=255)
+        self.set_values('wetlands-environment-1', raindrops_3=255)
+        time.sleep(5)
+        self.set_values('wetlands-environment-1', raindrops_1=0)
+        self.set_values('wetlands-environment-1', raindrops_2=0)
+        self.set_values('wetlands-environment-1', raindrops_3=0)
+        time.sleep(3)
 
 class MisterExample(Sketch):
     def draw(self):
@@ -351,9 +468,9 @@ def init(hostname):
 
     '''TEGA STUFF HERE'''
     #photos = PhotoTaker(main)
-    #ripper = Dripper(main)
-    lights = LightsTest2(main)
-    #lights2 = LightsTest2(main)
+    #dripper = Dripper(main)
+    #lights = LightsTest2(main)
+    lights2 = LightsTest3(main)
     #mister = MisterExample(main)
     #redblink = redBlink(main)
     #test = TestAll(main)
