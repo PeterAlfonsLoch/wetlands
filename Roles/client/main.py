@@ -58,6 +58,40 @@ class Images(object):
 ########################
 ## SPEECH
 ########################
+
+class Speaker():
+    def __init__(self):
+        pass
+
+    def number_to_audio_files(self, number):
+        out = []
+        number = str(number)
+        number = number.replace('0.', '')
+        for digit in number:
+            out.append(BASE_PATH + '/audio/' + digit + '.wav')
+        return out
+
+
+    def speak(self, generation, iteration, fitness):
+        generation_files = self.number_to_audio_files(generation)
+        iteration_files = self.number_to_audio_files(iteration)
+        fitness_files = self.number_to_audio_files(fitness)
+
+        print generation, iteration
+        print generation_files
+        print iteration_files
+
+        all_audio = []
+        all_audio = [BASE_PATH + '/audio/generation.wav']
+        all_audio += generation_files
+        all_audio += [BASE_PATH + '/audio/iteration.wav']
+        all_audio += iteration_files
+
+        # all_audio += fitness_files
+
+        for audio_file in all_audio:
+            subprocess.call(['omxplayer', audio_file])
+
 class Speech(threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -221,8 +255,10 @@ class Main(threading.Thread):
         self.dmx = DMX()
         self.dmx.start()
 
-        self.speech = Speech()
-        self.speech.start()
+        # self.speech = Speech()
+        # self.speech.start()
+
+        self.speech = Speaker()
 
         #self.network.thirtybirds.subscribe_to_topic("reboot")
         #self.network.thirtybirds.subscribe_to_topic("remote_update")
@@ -263,7 +299,9 @@ class Main(threading.Thread):
                     self.dmx.add_to_queue("local/env_state/set", msg)
 
                 if topic == "{}/speech/say".format(self.hostname):
-                    self.speech.add_to_queue("local/speech/say", msg)
+                    # self.speech.add_to_queue("local/speech/say", msg)
+                    g, i, f = msg
+                    self.speech.speak(g, i, f)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
