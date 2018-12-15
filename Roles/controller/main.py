@@ -22,7 +22,7 @@ THIRTYBIRDS_PATH = "%s/thirtybirds_2_0" % (UPPER_PATH )
 CLIENT_FITNESS_LABELS = {
     "wetlands-environment-1": "landscape painting",
     "wetlands-environment-2": "wetlands landscape",
-    "wetlands-environment-3": "wetlands landscape",
+    "wetlands-environment-3": "crowd",
 }
 
 from thirtybirds_2_0.Network.manager import init as network_init
@@ -121,6 +121,7 @@ class SamOS(object):
             env_state = wetland.get_current_state()
             self.message_target.add_to_queue("local/env_state/response", (hostname, env_state))
             self.message_target.add_to_queue("local/speech/response", (hostname, wetland.generations + 1, wetland.current_dna + 1, wetland.get_current_fitness()))
+            print('current fitness', wetland.get_current_fitness())
 
     def update_wetland(self, hostname, filename):
         ''' Updates the a wetland with a new image '''
@@ -148,6 +149,8 @@ class SamOS(object):
         print next_env_state
         self.message_target.add_to_queue("local/env_state/response", (hostname, next_env_state))
         self.message_target.add_to_queue("local/speech/response", (hostname, wetland.generations + 1, wetland.current_dna + 1, current_fitness))
+        print('current fitness',current_fitness)
+
 
 
 # Main handles network send/recv and can see all other classes directly
@@ -159,9 +162,9 @@ class Main(threading.Thread):
         self.network.thirtybirds.subscribe_to_topic("controller/")
         self.samos = SamOS(self)
 
-        self.timer1 = PhotoTimer(self, "wetlands-environment-1", initial_delay=1, delay_between_photos=10)
-        self.timer2 = PhotoTimer(self, "wetlands-environment-2", initial_delay=3, delay_between_photos=11)
-        self.timer3 = PhotoTimer(self, "wetlands-environment-3", initial_delay=7, delay_between_photos=12)
+        self.timer1 = PhotoTimer(self, "wetlands-environment-1", initial_delay=1, delay_between_photos=180)
+        self.timer2 = PhotoTimer(self, "wetlands-environment-2", initial_delay=15, delay_between_photos=180)
+        self.timer3 = PhotoTimer(self, "wetlands-environment-3", initial_delay=30, delay_between_photos=180)
         self.timer1.start()
         self.timer2.start()
         self.timer3.start()

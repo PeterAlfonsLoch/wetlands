@@ -12,8 +12,7 @@ import json
 DMX_VALUE_RANGES = {
     "mister_1":     [0,255],
     "mister_2":     [0,255],
-    "grow_light":   [0,255],
-    "pump":         [0,255],
+    "fan":   [0,255],
     "raindrops_1":  [0,255],
     "raindrops_2":  [0,255],
     "raindrops_3":  [0,255],
@@ -25,7 +24,8 @@ DMX_VALUE_RANGES = {
     "dj_light_2_r": range(0,255),
     "dj_light_2_g": range(0,255),
     "dj_light_2_b": range(0,255),
-     "dj_light_3_r": range(0,255),
+    "dj_light_3_d": [255],
+    "dj_light_3_r": range(0,255),
     "dj_light_3_g": range(0,255),
     "dj_light_3_b": range(0,255),
 }

@@ -109,7 +109,6 @@ class Speech(threading.Thread):
         self.queue.put((topic, msg))
 
     def run(self):
-        while True:
             topic, msg = self.queue.get(True)
             if topic == "local/speech/say":
                 generation, iteration, fitness = msg
@@ -122,12 +121,12 @@ class Speech(threading.Thread):
                 print iteration_files
 
                 all_audio = []
-                # all_audio = [BASE_PATH + '/audio/generation.wav']
-                # all_audio += generation_files
-                # all_audio += [BASE_PATH + '/audio/iteration.wav']
-                # all_audio += iteration_files
+                all_audio = [BASE_PATH + '/audio/generation.wav']
+                all_audio += generation_files
+                all_audio += [BASE_PATH + '/audio/iteration.wav']
+                all_audio += iteration_files
 
-                all_audio += fitness_files
+                # all_audio += fitness_files
 
                 for audio_file in all_audio:
                     subprocess.call(['omxplayer', audio_file])
@@ -168,8 +167,7 @@ class DMX(threading.Thread):
             # "raindrops_3": 33,
             "mister_1": 1,
             "mister_2": 2,
-            "pump": 3,
-            "grow_light": 4,
+            "fan": 3,
             "dj_light_2_d": 8,
             "dj_light_2_r": 9,
             "dj_light_2_g": 10,
@@ -178,9 +176,10 @@ class DMX(threading.Thread):
             "dj_light_1_r": 16,
             "dj_light_1_g": 17,
             "dj_light_1_b": 18,
-            "dj_light_3_r": 27,
-            "dj_light_3_g": 28,
-            "dj_light_3_b": 29,
+            "dj_light_3_d": 27,
+            "dj_light_3_r": 28,
+            "dj_light_3_g": 29,
+            "dj_light_3_b": 30,
             "raindrops_1": 32,
             "raindrops_2": 33,
             "raindrops_3": 34,
