@@ -291,7 +291,7 @@ class Main(threading.Thread):
 
         self.speech = Speaker()
 
-        self.drippers []
+        self.drippers = []
         for dripper_name in ["raindrops_1", "raindrops_2", "raindrops_3"]:
             dripper = Dripper(dripper_name, self.dmx)
             dripper.start()
