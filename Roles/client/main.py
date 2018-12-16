@@ -109,16 +109,13 @@ class Speech(threading.Thread):
         self.queue.put((topic, msg))
 
     def run(self):
+        while True:
             topic, msg = self.queue.get(True)
             if topic == "local/speech/say":
                 generation, iteration, fitness = msg
                 generation_files = self.number_to_audio_files(generation)
                 iteration_files = self.number_to_audio_files(iteration)
                 fitness_files = self.number_to_audio_files(fitness)
-
-                print generation, iteration
-                print generation_files
-                print iteration_files
 
                 all_audio = []
                 all_audio = [BASE_PATH + '/audio/generation.wav']
@@ -286,10 +283,10 @@ class Main(threading.Thread):
         self.dmx = DMX()
         self.dmx.start()
 
-        # self.speech = Speech()
-        # self.speech.start()
+        self.speech = Speech()
+        self.speech.start()
 
-        self.speech = Speaker()
+        # self.speech = Speaker()
 
         self.drippers = []
         for dripper_name in ["raindrops_1", "raindrops_2", "raindrops_3"]:
@@ -340,9 +337,9 @@ class Main(threading.Thread):
                             dripper.reset(msg[di] == 255)
 
                 if topic == "{}/speech/say".format(self.hostname):
-                    # self.speech.add_to_queue("local/speech/say", msg)
-                    g, i, f = msg
-                    self.speech.speak(g, i, f)
+                    self.speech.add_to_queue("local/speech/say", msg)
+                    # g, i, f = msg
+                    # self.speech.speak(g, i, f)
 
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
