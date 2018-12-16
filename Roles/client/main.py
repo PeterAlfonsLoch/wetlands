@@ -133,6 +133,38 @@ class Speech(threading.Thread):
 
 
 ########################
+## DRIPPERS
+########################
+class Dripper(threading.Thread):
+    def __init__(self, dripper_id, dmx, active=False):
+        threading.Thread.__init__(self)
+        self.dripper_id = dripper_id
+        self.dmx = dmx
+        self.reset(active)
+
+    def reset(self, active):
+        self.active = active
+        self.ontime = random.uniform(0.1, 0.4)
+        self.offtime = random.uniform(0.2, 0.5)
+        self.stop_drip()
+
+    def start_drip(self):
+        self.dmx.add_to_queue("local/env_state/set", {self.dripper_id: 255})
+
+    def stop_drip(self):
+        self.dmx.add_to_queue("local/env_state/set", {self.dripper_id: 0})
+
+    def run(self):
+        while True:
+            if self.active:
+                print self.dripper_id, "on"
+                self.start_drip()
+                time.sleep(self.ontime)
+                print self.dripper_id, "off"
+                self.stop_drip()
+                time.sleep(self.offtime)
+
+########################
 ## DMX
 ########################
 
@@ -259,6 +291,12 @@ class Main(threading.Thread):
 
         self.speech = Speaker()
 
+        self.drippers []
+        for dripper_name in ["raindrops_1", "raindrops_2", "raindrops_3"]:
+            dripper = Dripper(dripper_name, self.dmx)
+            dripper.start()
+            self.drippers.append(dripper)
+
         #self.network.thirtybirds.subscribe_to_topic("reboot")
         #self.network.thirtybirds.subscribe_to_topic("remote_update")
         #self.network.thirtybirds.subscribe_to_topic("remote_update_scripts")
@@ -296,6 +334,10 @@ class Main(threading.Thread):
 
                 if topic == "{}/env_state/set".format(self.hostname):
                     self.dmx.add_to_queue("local/env_state/set", msg)
+                    for dripper in self.drippers:
+                        di = dripper.dripper_id
+                        if di in msg:
+                            dripper.reset(msg[di] == 255)
 
                 if topic == "{}/speech/say".format(self.hostname):
                     # self.speech.add_to_queue("local/speech/say", msg)
