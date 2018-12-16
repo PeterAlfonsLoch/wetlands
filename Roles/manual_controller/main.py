@@ -94,6 +94,11 @@ class Main(threading.Thread):
                     hostname, env_state = data
                     self.network.thirtybirds.send("{}/env_state/set".format(hostname), env_state)
 
+                if topic == "local/speech/response":
+                    hostname, generation, iteration, fitness = data
+                    print("SPEECH", hostname, generation, iteration, fitness)
+                    self.network.thirtybirds.send("{}/speech/say".format(hostname), (generation, iteration, fitness))    
+
             except Exception as e:
                 exc_type, exc_value, exc_traceback = sys.exc_info()
                 print e, repr(traceback.format_exception(exc_type, exc_value,exc_traceback))
@@ -105,9 +110,10 @@ class Sketch(threading.Thread):
     def __init__(self, message_target):
         threading.Thread.__init__(self)
         self.message_target = message_target
-        self.setup()
         self.daemon = True
         self.start()
+        self.setup()
+
 
     def set_state(self, hostname, env_state):
         self.message_target.add_to_queue("local/env_state/response", (hostname, env_state))
@@ -126,6 +132,33 @@ class Sketch(threading.Thread):
         state[light_name + 'b'] = b
         state[light_name + 'd'] = dimmer
         self.set_state(hostname, state)
+
+    def say(self, hostname, g, i, f):
+        self.message_target.add_to_queue("local/speech/response", (hostname, g, i, f))
+
+
+    def reset_all(self, name):
+        self.set_state(name, {
+            "mister_1": 0,
+            "mister_2": 0,
+            "fan": 0,
+            "dj_light_3_d": 0,
+            "dj_light_3_r": 0,
+            "dj_light_3_g": 0,
+            "dj_light_3_b": 0,
+            "dj_light_2_d": 0,
+            "dj_light_2_r": 0,
+            "dj_light_2_g": 0,
+            "dj_light_2_b": 0,
+            "dj_light_1_d": 0,
+            "dj_light_1_r": 0,
+            "dj_light_1_g": 0,
+            "dj_light_1_b": 0,
+            "raindrops_1": 0,
+            "raindrops_2": 0,
+            "raindrops_3": 0,
+        })
+
 
     def setup(self):
         pass
@@ -195,16 +228,28 @@ class StateExample(Sketch):
         time.sleep(6)
 
 class LightsTest(Sketch):
+
+    def setup(self):
+        self.r1 = 0
+        self.b1 = 0
+        self.g1 = 0
+
     def draw(self):
         print 'lights'
 
-        r1 = random.randint(0, 255)
-        g1 = random.randint(0, 255)
-        b1 = random.randint(0, 255)
+        # r1 = random.randint(0, 255)
+        # g1 = random.randint(0, 255)
+        # b1 = random.randint(0, 255)
+        self.g1 += 4
+        if self.g1 >= 255:
+            self.g1 = 0
 
-        self.set_light('wetlands-environment-3', light_number=1, r=r1, b=b1, g=g1, dimmer=255)
+        self.set_light('wetlands-environment-3', light_number=3, r=self.r1, b=self.b1, g=self.g1, dimmer=255)
+        # self.set_light('wetlands-environment-3', light_number=3, r=r1, b=b1, g=g1, dimmer=255)
+        # self.set_light('wetlands-environment-3', light_number=2, r=r1, b=b1, g=g1, dimmer=255)
+        # self.set_light('wetlands-environment-3', light_number=3, r=r1, b=b1, g=g1, dimmer=255)
 
-        time.sleep(1)
+        time.sleep(0.2)
 
 
 class LightsTest1(Sketch):
@@ -379,9 +424,9 @@ class MisterExample(Sketch):
 
 class RedBlink(Sketch):
     def draw(self):
-        self.set_light('wetlands-environment-3',  1, 255,255,0,0)
+        self.set_light('wetlands-environment-2',  1, 255,255,0,0)
         time.sleep(0.5)
-        self.set_light('wetlands-environment-3', 1, 0,0,0,0)
+        self.set_light('wetlands-environment-2', 1, 0,0,0,0)
         time.sleep(0.5)
 
 
@@ -458,6 +503,77 @@ class TestAll(Sketch):
         #time.sleep(1) 
 
 
+class SpeechTest(Sketch):
+    def draw(self):
+        self.say('wetlands-environment-1', 1, 1, 1)
+        time.sleep(1)
+        self.say('wetlands-environment-2', 1, 1, 1)
+        time.sleep(1)
+        self.say('wetlands-environment-3', 1, 1, 1)
+        time.sleep(10)
+
+
+class TestAllLights(Sketch):
+
+    def draw(self):
+
+        colors = [[255, 255, 0, 0], [255, 0, 255, 0], [255, 0, 0, 255]]#, [255, 255, 255, 0], [255, 255, 0, 255], [255, 0, 255, 255]]
+        names = ["wetlands-environment-1", "wetlands-environment-2"]
+        names = ["wetlands-environment-1"]
+        lights = [1,2,3]
+        # lights = [1]
+
+        for name in names:
+            for light in lights:
+                self.set_light(name, light, 0, 0, 0)
+
+        for name in names:
+            for light in lights:
+                for color in colors:
+                    params = [light] + color
+                    self.set_light(name, *params)
+                    time.sleep(1)
+                    self.set_light(name, light, 0, 0, 0)
+
+
+class TestAllDrips(Sketch):
+
+    def draw(self):
+        names = ["wetlands-environment-1"]#, "wetlands-environment-2"]
+
+        for name in names:
+            self.set_values(name, raindrops_1=255)
+            self.set_values(name, raindrops_2=255)
+            self.set_values(name, raindrops_3=255)
+            time.sleep(.1)
+
+        for name in names:
+            self.set_values(name, raindrops_1=0)
+            self.set_values(name, raindrops_2=0)
+            self.set_values(name, raindrops_3=0)
+            time.sleep(.1)
+
+
+class TestAllMisters(Sketch):
+
+    def setup(self):
+        for name in ["wetlands-environment-1", "wetlands-environment-2"]:
+            self.reset_all(name)
+        
+
+    def draw(self):
+        names = ["wetlands-environment-1", "wetlands-environment-2"]
+
+        for name in names:
+            self.reset_all(name)
+            self.set_values(name, mister_1=255)
+            self.set_values(name, mister_2=255)
+            time.sleep(3)
+
+        for name in names:
+            self.set_values(name, mister_1=0)
+            self.set_values(name, mister_2=0)
+            time.sleep(3)
 
 '''END TEGA STUFF'''
 
@@ -470,9 +586,12 @@ def init(hostname):
     #photos = PhotoTaker(main)
     #dripper = Dripper(main)
     #lights = LightsTest2(main)
-    lights2 = LightsTest3(main)
+    # lights2 = LightsTest(main)
+    # s = SpeechTest(main)
     #mister = MisterExample(main)
-    #redblink = redBlink(main)
+    # lights = TestAllLights(main)
+    misters = TestAllMisters(main)
+    # drip = TestAllDrips(main)
     #test = TestAll(main)
     '''END TEGA STUFF'''
 
