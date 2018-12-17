@@ -141,8 +141,8 @@ class Dripper(threading.Thread):
 
     def reset(self, active):
         self.active = active
-        self.ontime = random.uniform(0.1, 0.4)
-        self.offtime = random.uniform(0.2, 0.5)
+        self.ontime = random.uniform(0.1, 0.2)
+        self.offtime = random.uniform(3, 4)
         self.stop_drip()
 
     def start_drip(self):
@@ -330,11 +330,12 @@ class Main(threading.Thread):
                     self.network.thirtybirds.send("controller/image_capture/response", (self.hostname,image_as_string))
 
                 if topic == "{}/env_state/set".format(self.hostname):
-                    self.dmx.add_to_queue("local/env_state/set", msg)
                     for dripper in self.drippers:
                         di = dripper.dripper_id
                         if di in msg:
                             dripper.reset(msg[di] == 255)
+                        msg[di] = 0
+                    self.dmx.add_to_queue("local/env_state/set", msg)
 
                 if topic == "{}/speech/say".format(self.hostname):
                     self.speech.add_to_queue("local/speech/say", msg)
