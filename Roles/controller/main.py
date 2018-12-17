@@ -173,6 +173,9 @@ class Main(threading.Thread):
         self.timer1 = PhotoTimer(self, "wetlands-environment-1", initial_delay=1, delay_between_photos=30)
         self.timer2 = PhotoTimer(self, "wetlands-environment-2", initial_delay=5, delay_between_photos=30)
 
+        self.timer1.daemon = True
+        self.timer2.daemon = True
+
         self.timer1.start()
         self.timer2.start()
 

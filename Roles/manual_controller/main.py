@@ -515,25 +515,37 @@ class SpeechTest(Sketch):
 
 class TestAllLights(Sketch):
 
+    def empty(self):
+        state = {}
+        for light in [1,2,3]:
+            state["dj_light_{}_d".format(light)]=0
+            state["dj_light_{}_r".format(light)]=0
+            state["dj_light_{}_g".format(light)]=0
+            state["dj_light_{}_b".format(light)]=0
+        return state
+
+
     def draw(self):
 
         colors = [[255, 255, 0, 0], [255, 0, 255, 0], [255, 0, 0, 255]]#, [255, 255, 255, 0], [255, 255, 0, 255], [255, 0, 255, 255]]
         names = ["wetlands-environment-1", "wetlands-environment-2"]
-        names = ["wetlands-environment-1"]
+        # names = ["wetlands-environment-1"]
         lights = [1,2,3]
         # lights = [1]
 
-        for name in names:
-            for light in lights:
-                self.set_light(name, light, 0, 0, 0)
+
 
         for name in names:
             for light in lights:
                 for color in colors:
-                    params = [light] + color
-                    self.set_light(name, *params)
-                    time.sleep(1)
-                    self.set_light(name, light, 0, 0, 0)
+                    state = self.empty()
+                    state["dj_light_{}_d".format(light)]=color[0]
+                    state["dj_light_{}_r".format(light)]=color[1]
+                    state["dj_light_{}_g".format(light)]=color[2]
+                    state["dj_light_{}_b".format(light)]=color[3]
+                    print(name, light, color)
+                    self.set_state(name, state)
+                    time.sleep(2)
 
 
 class TestAllDrips(Sketch):
@@ -541,17 +553,19 @@ class TestAllDrips(Sketch):
     def draw(self):
         names = ["wetlands-environment-1"]#, "wetlands-environment-2"]
 
+        print("turning on")
         for name in names:
             self.set_values(name, raindrops_1=255)
             self.set_values(name, raindrops_2=255)
             self.set_values(name, raindrops_3=255)
-            time.sleep(.1)
+            time.sleep(25)
 
+        print("off")
         for name in names:
             self.set_values(name, raindrops_1=0)
             self.set_values(name, raindrops_2=0)
             self.set_values(name, raindrops_3=0)
-            time.sleep(.1)
+            time.sleep(10)
 
 
 class TestAllMisters(Sketch):
@@ -559,10 +573,9 @@ class TestAllMisters(Sketch):
     def setup(self):
         for name in ["wetlands-environment-1", "wetlands-environment-2"]:
             self.reset_all(name)
-        
 
     def draw(self):
-        names = ["wetlands-environment-1", "wetlands-environment-2"]
+        names = ["wetlands-environment-1", "wetlands-environment-2", "wetlands-environment-3"]
 
         for name in names:
             self.reset_all(name)
@@ -590,8 +603,8 @@ def init(hostname):
     # s = SpeechTest(main)
     #mister = MisterExample(main)
     # lights = TestAllLights(main)
-    misters = TestAllMisters(main)
-    # drip = TestAllDrips(main)
+    # misters = TestAllMisters(main)
+    drip = TestAllDrips(main)
     #test = TestAll(main)
     '''END TEGA STUFF'''
 

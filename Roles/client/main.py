@@ -137,6 +137,7 @@ class Dripper(threading.Thread):
         threading.Thread.__init__(self)
         self.dripper_id = dripper_id
         self.dmx = dmx
+        self.initial_delay = random.randint(0, 4)
         self.reset(active)
 
     def reset(self, active):
@@ -152,6 +153,7 @@ class Dripper(threading.Thread):
         self.dmx.add_to_queue("local/env_state/set", {self.dripper_id: 0})
 
     def run(self):
+        time.sleep(self.initial_delay)
         while True:
             if self.active:
                 print self.dripper_id, "on"
@@ -281,9 +283,11 @@ class Main(threading.Thread):
         #self.utils = Utils(hostname)
         self.images = Images(self.capture_path)
         self.dmx = DMX()
+        self.dmx.daemon = True
         self.dmx.start()
 
         self.speech = Speech()
+        self.speech.daemon = True
         self.speech.start()
 
         # self.speech = Speaker()
@@ -291,6 +295,7 @@ class Main(threading.Thread):
         self.drippers = []
         for dripper_name in ["raindrops_1", "raindrops_2", "raindrops_3"]:
             dripper = Dripper(dripper_name, self.dmx)
+            dripper.daemon = True
             dripper.start()
             self.drippers.append(dripper)
 
@@ -334,7 +339,7 @@ class Main(threading.Thread):
                         di = dripper.dripper_id
                         if di in msg:
                             dripper.reset(msg[di] == 255)
-                        msg[di] = 0
+                            msg[di] = 0
                     self.dmx.add_to_queue("local/env_state/set", msg)
 
                 if topic == "{}/speech/say".format(self.hostname):
