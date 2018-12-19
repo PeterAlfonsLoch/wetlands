@@ -143,7 +143,7 @@ class Dripper(threading.Thread):
     def reset(self, active):
         self.active = active
         self.ontime = random.uniform(0.1, 0.2)
-        self.offtime = random.uniform(3, 4)
+        self.offtime = random.uniform(1.0, 1.5)
         self.stop_drip()
 
     def start_drip(self):
@@ -156,10 +156,10 @@ class Dripper(threading.Thread):
         time.sleep(self.initial_delay)
         while True:
             if self.active:
-                print self.dripper_id, "on"
+                # print self.dripper_id, "on"
                 self.start_drip()
                 time.sleep(self.ontime)
-                print self.dripper_id, "off"
+                # print self.dripper_id, "off"
                 self.stop_drip()
                 time.sleep(self.offtime)
 
@@ -292,12 +292,12 @@ class Main(threading.Thread):
 
         # self.speech = Speaker()
 
-        self.drippers = []
-        for dripper_name in ["raindrops_1", "raindrops_2", "raindrops_3"]:
-            dripper = Dripper(dripper_name, self.dmx)
-            dripper.daemon = True
-            dripper.start()
-            self.drippers.append(dripper)
+        # self.drippers = []
+        # for dripper_name in ["raindrops_1", "raindrops_2", "raindrops_3"]:
+        #     dripper = Dripper(dripper_name, self.dmx)
+        #     dripper.daemon = True
+        #     dripper.start()
+        #     self.drippers.append(dripper)
 
         #self.network.thirtybirds.subscribe_to_topic("reboot")
         #self.network.thirtybirds.subscribe_to_topic("remote_update")
@@ -335,11 +335,11 @@ class Main(threading.Thread):
                     self.network.thirtybirds.send("controller/image_capture/response", (self.hostname,image_as_string))
 
                 if topic == "{}/env_state/set".format(self.hostname):
-                    for dripper in self.drippers:
-                        di = dripper.dripper_id
-                        if di in msg:
-                            dripper.reset(msg[di] == 255)
-                            msg[di] = 0
+                    # for dripper in self.drippers:
+                    #     di = dripper.dripper_id
+                    #     if di in msg:
+                    #         dripper.reset(msg[di] == 255)
+                    #         msg[di] = 0
                     self.dmx.add_to_queue("local/env_state/set", msg)
 
                 if topic == "{}/speech/say".format(self.hostname):
