@@ -17,6 +17,8 @@ import threading
 import time
 import traceback
 import subprocess
+from pydub import AudioSegment
+from glob import glob
 
 from thirtybirds_2_0.Network.manager import init as thirtybirds_network
 from thirtybirds_2_0.Adaptors.Cameras.c920 import init as camera_init
@@ -107,6 +109,33 @@ class Speech(threading.Thread):
 
     def add_to_queue(self, topic, msg):
         self.queue.put((topic, msg))
+
+    def say(self, generation, iteration):
+        nouns = glob(BASE_PATH + "/audio/nouns/*.wav")
+        verbs = glob(BASE_PATH + "/audio/verbs/*.wav")
+        generation_files = self.number_to_audio_files(generation)
+        iteration_files = self.number_to_audio_files(iteration)
+
+        phrase = []
+        phrase += [BASE_PATH + '/audio/generation.wav']
+        phrase += generation_files
+        phrase += [BASE_PATH + '/audio/iteration.wav']
+        phrase += iteration_files
+        phrase += [random.choice(verbs), random.choice(verbs), random.choice(nouns)]
+
+        out = AudioSegment.silent()
+        for i, p in enumerate(phrase):
+            p = AudioSegment.from_wav(p)
+            if i > 0:
+                crossfade = 400
+            else:
+                crossfade = 100
+            p = p.normalize()
+            out = out.append(p, crossfade=crossfade)
+
+        out.export("audio.mp3", format="mp3", parameters=["-ac", "2", "-vol", "250"])
+        subprocess.call(["omxplayer", "out.mp3"])
+
 
     def run(self):
         while True:
@@ -319,6 +348,22 @@ class Main(threading.Thread):
         # this method runs in the thread of the caller, not the tread of Main
         print "Main.network_status_handler", topic_msg
 
+    def override(self, msg):
+        overrides = {
+            "wetlands-environment-1": {
+                "dj_light_3_g": 0
+            },
+            "wetlands-environment-2": {
+                "dj_light_3_b": 0,
+                "dj_light_2_g": 0,
+            }
+        }
+
+        for key in overrides[self.hostname]:
+            msg[key] = overrides[self.hostname][key]
+
+        return msg
+
     def add_to_queue(self, topic, msg):
         self.queue.put((topic, msg))
 
@@ -340,6 +385,7 @@ class Main(threading.Thread):
                     #     if di in msg:
                     #         dripper.reset(msg[di] == 255)
                     #         msg[di] = 0
+                    msg = self.override(msg)
                     self.dmx.add_to_queue("local/env_state/set", msg)
 
                 if topic == "{}/speech/say".format(self.hostname):
