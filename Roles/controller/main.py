@@ -219,6 +219,8 @@ class Main(threading.Thread):
                     pathname = "Captures/{}".format(filename)
                     with open(pathname, "wb") as fh:
                         fh.write(image_as_string.decode("base64"))
+                    # rotate image if needed
+                    subprocess.call(["mogrify", "-rotate", "180", pathname])
                     self.samos.update_wetland(hostname, pathname)
 
                 if topic == "local/env_state/response":
