@@ -99,16 +99,16 @@ class Speech(threading.Thread):
         threading.Thread.__init__(self)
         self.queue = Queue.Queue()
 
+    def add_to_queue(self, topic, msg):
+        self.queue.put((topic, msg))
+
     def number_to_audio_files(self, number):
         out = []
         number = str(number)
         number = number.replace('0.', '')
         for digit in number:
-            out.append(BASE_PATH + '/audio/' + digit + '.wav')
+            out.append(BASE_PATH + '/audio/numbers/' + digit + '.wav')
         return out
-
-    def add_to_queue(self, topic, msg):
-        self.queue.put((topic, msg))
 
     def say(self, generation, iteration):
         nouns = glob(BASE_PATH + "/audio/nouns/*.wav")
@@ -117,24 +117,32 @@ class Speech(threading.Thread):
         iteration_files = self.number_to_audio_files(iteration)
 
         phrase = []
-        phrase += [BASE_PATH + '/audio/generation.wav']
+        phrase += [random.choice(glob(BASE_PATH + '/audio/generations/*.wav'))]
         phrase += generation_files
-        phrase += [BASE_PATH + '/audio/iteration.wav']
+        phrase += [1000]
+        phrase += [random.choice(glob(BASE_PATH + '/audio/iterations/*.wav'))]
         phrase += iteration_files
+        phrase += [1000]
         phrase += [random.choice(verbs), random.choice(verbs), random.choice(nouns)]
+
+        print(phrase)
 
         out = AudioSegment.silent()
         for i, p in enumerate(phrase):
-            p = AudioSegment.from_wav(p)
-            if i > 0:
-                crossfade = 400
+            print(p)
+            if type(p) == type(1):
+                p = AudioSegment.silent(duration=p)
             else:
+                p = AudioSegment.from_wav(p)
+            if i > 0:
                 crossfade = 100
+            else:
+                crossfade = 50
             p = p.normalize()
             out = out.append(p, crossfade=crossfade)
 
         out.export("audio.mp3", format="mp3", parameters=["-ac", "2", "-vol", "250"])
-        subprocess.call(["omxplayer", "out.mp3"])
+        subprocess.call(["omxplayer", "audio.mp3"])
 
 
     def run(self):
@@ -142,20 +150,21 @@ class Speech(threading.Thread):
             topic, msg = self.queue.get(True)
             if topic == "local/speech/say":
                 generation, iteration, fitness = msg
-                generation_files = self.number_to_audio_files(generation)
-                iteration_files = self.number_to_audio_files(iteration)
-                fitness_files = self.number_to_audio_files(fitness)
-
-                all_audio = []
-                all_audio = [BASE_PATH + '/audio/generation.wav']
-                all_audio += generation_files
-                all_audio += [BASE_PATH + '/audio/iteration.wav']
-                all_audio += iteration_files
-
-                # all_audio += fitness_files
-
-                for audio_file in all_audio:
-                    subprocess.call(['omxplayer', audio_file])
+                self.say(generation, iteration)
+                # generation_files = self.number_to_audio_files(generation)
+                # iteration_files = self.number_to_audio_files(iteration)
+                # fitness_files = self.number_to_audio_files(fitness)
+                #
+                # all_audio = []
+                # all_audio = [BASE_PATH + '/audio/generation.wav']
+                # all_audio += generation_files
+                # all_audio += [BASE_PATH + '/audio/iteration.wav']
+                # all_audio += iteration_files
+                #
+                # # all_audio += fitness_files
+                #
+                # for audio_file in all_audio:
+                #     subprocess.call(['omxplayer', audio_file])
 
 
 ########################
